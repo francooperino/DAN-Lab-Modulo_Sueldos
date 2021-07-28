@@ -1,10 +1,28 @@
 package danms.sueldos.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.springframework.lang.NonNull;
+
+@Entity
 public class DetalleRecibo {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY) //valor autonumerico
+	@Column(name="ID_DETALLE_RECIBO")
 	private Integer id;
 	private Double porcentaje;
 	private Double haber;
 	private Double deduccion;
+	
+	@NonNull
+	@ManyToOne
+	@JoinColumn(name = "ID_CODIGO_DETALLE")
 	private CodigoDetalle codigoDetalle;
 	
 	public DetalleRecibo() {

@@ -1,6 +1,16 @@
 package danms.sueldos.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class Sucursal {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY) //valor autonumerico
+	@Column(name="ID_SUCURSAL")
 	private Integer id;
 	private String direccion;
 	private String ciudad;

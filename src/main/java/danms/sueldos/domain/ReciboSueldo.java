@@ -4,7 +4,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import org.springframework.lang.NonNull;
+
+@Entity
 public class ReciboSueldo {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY) //valor autonumerico
+	@Column(name="ID_RECIBO_SUELDO")
 	private Integer id;
 	private Integer numeroRecibo;
 	private Date fechaEmision;
@@ -14,8 +29,20 @@ public class ReciboSueldo {
 	private Double totalBruto;
 	private Double totalNeto;
 	private Double deducciones;
+	
+	@NonNull
+	@OneToMany
+	@JoinColumn(name = "ID_DETALLE_RECIBO")
 	private List<DetalleRecibo> listaDetalleRecibo;
+	
+	@NonNull
+	@ManyToOne
+	@JoinColumn(name = "ID_SUCURSAL")
 	private Sucursal sucursal;
+	
+	@NonNull
+	@ManyToOne
+	@JoinColumn(name = "ID_EMPLEADO")
 	private Empleado empleado;
 	
 	public ReciboSueldo(Integer numeroRecibo, Date fechaEmision, String lugarDePago, Date fechaDePago, Boolean pagado,

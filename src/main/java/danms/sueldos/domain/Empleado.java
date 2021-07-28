@@ -1,8 +1,26 @@
 package danms.sueldos.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+
+import org.springframework.lang.NonNull;
+
+@Entity
 public class Empleado {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY) //valor autonumerico
+	@Column(name="ID_EMPLEADO")
 	private Integer id;
 	private String email;
+	
+	@NonNull
+	@OneToOne
+	@JoinColumn(name="ID_DATO_BANCARIO")
 	private DatoBancario datoBancario;
 	
 	public Empleado() {

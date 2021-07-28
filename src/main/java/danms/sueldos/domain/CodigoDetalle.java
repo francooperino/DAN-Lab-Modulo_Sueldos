@@ -1,7 +1,16 @@
 package danms.sueldos.domain;
 
-public class CodigoDetalle {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
+@Entity
+public class CodigoDetalle {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY) //valor autonumerico
+	@Column(name="ID_CODIGO_DETALLE")
 	private Integer id;
 	private Integer codigoDetalle;
 	private String descripcion;
