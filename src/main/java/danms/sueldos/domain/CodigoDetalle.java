@@ -27,6 +27,17 @@ public class CodigoDetalle {
 		this.codigoDetalle = codigoDetalle;
 		this.descripcion = descripcion;
 	}
+	
+	public Integer getId() {
+		return id;
+	}
+
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+
 	public Integer getCodigoDetalle() {
 		return codigoDetalle;
 	}
@@ -39,6 +50,14 @@ public class CodigoDetalle {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
+
+
+	@Override
+	public String toString() {
+		return "CodigoDetalle [id=" + id + ", codigoDetalle=" + codigoDetalle + ", descripcion=" + descripcion + "]";
+	}
+	
+	
 	
 	
 	
