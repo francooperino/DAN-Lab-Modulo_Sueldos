@@ -158,9 +158,9 @@ class SucursalServiceImpTest {
 
 		// Obetenemos la sucursales
 		List<Sucursal> listaSucursales = sucursalService.getAllSucursal();
-		assertEquals(3,listaSucursales.size());
+		assertEquals(3, listaSucursales.size());
 	}
-	
+
 	@Test
 	void borrarSucursal() {
 		// Sucursal 1
@@ -172,14 +172,32 @@ class SucursalServiceImpTest {
 		// Chequeamos que el retorno sea el correcto
 		Optional<Sucursal> optS1 = sucursalService.guardarSucursal(s1);
 		assertTrue(optS1.isPresent());
-		
-		//Borramos la sucursal
+
+		// Borramos la sucursal
 		sucursalService.borrarSucursal(optS1.get());
 
 		// Obetenemos la sucursal
 		Optional<Sucursal> optRepoS1 = sucursalRepo.findById(optS1.get().getId());
 		assertTrue(optRepoS1.isEmpty());
 
+	}
+
+	@Test
+	void borrarSucursal_ID_NoExiste() {
+		// Sucursal 1
+		Sucursal s1 = new Sucursal();
+		s1.setCiudad("Lucas Gonzalez");
+		s1.setCuitEmpresa("30-289615936");
+		s1.setDireccion("Hernandez 321");
+
+		// Chequeamos que el retorno sea el correcto
+		Optional<Sucursal> optS1 = sucursalService.guardarSucursal(s1);
+		assertTrue(optS1.isPresent());
+
+		// Borramos la sucursal
+		optS1.get().setId(4500);
+		Optional<Sucursal> optSucursalBorrada = sucursalService.borrarSucursal(optS1.get());
+		assertTrue(optSucursalBorrada.isEmpty());
 	}
 
 }
