@@ -44,8 +44,9 @@ public class Sucursal {
 	public void setCuitEmpresa(String cuitEmpresa) {
 		this.cuitEmpresa = cuitEmpresa;
 	}
-	
-	
-	
+	public Integer getId() {
+		return id;
+	}
+
 	
 }
