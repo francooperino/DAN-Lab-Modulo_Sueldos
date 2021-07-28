@@ -19,8 +19,7 @@ public class Empleado {
 	private String email;
 	
 	@NonNull
-	@OneToOne
-	@JoinColumn(name="ID_DATO_BANCARIO")
+	@OneToOne(mappedBy = "empleado")
 	private DatoBancario datoBancario;
 	
 	public Empleado() {

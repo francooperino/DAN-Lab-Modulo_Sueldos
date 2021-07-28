@@ -25,7 +25,7 @@ public class SucursalServiceImp implements SucursalService {
 
 	@Override
 	public Optional<Sucursal> guardarSucursal(Sucursal sucursal) {
-		logger.info("c de guardado de sucursal");
+		logger.info("Solicitud de guardado de sucursal");
 		try {
 			sucursalRepo.saveAndFlush(sucursal);
 			logger.debug("Se guardo correctamente la sucursal");
