@@ -40,28 +40,46 @@ public class SucursalServiceImp implements SucursalService {
 	@Override
 	public Optional<Sucursal> actualizarSucursal(Sucursal sucursal) {
 		logger.info("Solicitud de actualizacion de sucursal");
-		// Chequemos que ya exista
-		if (sucursal.getId() != null) {
-			logger.debug("La sucursal existe");
-			return this.guardarSucursal(sucursal);
+		try {
+			// Chequemos que ya exista
+			if (sucursal.getId() != null) {
+				Optional<Sucursal> optSucursalBuscada = sucursalRepo.findById(sucursal.getId());
+				if (optSucursalBuscada.isPresent()) {
+					// Existe en la DB
+					logger.debug("Existe la sucursal con id: " + sucursal.getId());
+					return this.guardarSucursal(sucursal);
+				} else {
+					// No existe en la DB
+					logger.error("La sucursal con la id: " + sucursal.getId() + " no existe en la DB");
+					throw new IllegalArgumentException(
+							"La sucursal con la id: " + sucursal.getId() + " no existe en la DB");
+				}
+			} else {
+				// Id nula
+				logger.error("La id recibida es nula");
+				throw new IllegalArgumentException("La id recibida es nula");
+			}
+
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			logger.error("La sucursal no pudo ser actualizada");
+			return Optional.empty();
 		}
-		logger.debug("La sucursal no existe por lo tanto se debe crear primero");
-		return Optional.empty();
 	}
 
 	@Override
 	public Optional<Sucursal> getSucursal(Integer idSucursal) {
-		logger.info("Solicitud de obtenciion de la sucursal: "+idSucursal);
+		logger.info("Solicitud de obtenciion de la sucursal: " + idSucursal);
 		try {
 			Optional<Sucursal> optSucursal = sucursalRepo.findById(idSucursal);
-			//Chequemos si la encontro
-			if(optSucursal.isEmpty()) {
-				logger.debug("No se encontro la sucursal con la id: "+ idSucursal);
+			// Chequemos si la encontro
+			if (optSucursal.isEmpty()) {
+				logger.debug("No se encontro la sucursal con la id: " + idSucursal);
 				return optSucursal;
 			}
-			logger.debug("Se encontro la sucursal con la id: "+ idSucursal);
+			logger.debug("Se encontro la sucursal con la id: " + idSucursal);
 			return optSucursal;
-			
+
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 			logger.error("La id recibida es null");
@@ -76,16 +94,25 @@ public class SucursalServiceImp implements SucursalService {
 
 	@Override
 	public Optional<Sucursal> borrarSucursal(Sucursal sucursal) {
-		logger.info("Solicitud de borrado de la sucursal: "+sucursal.getId());
-		try {
-			sucursalRepo.deleteById(sucursal.getId());
-			logger.debug("Se borro correctamente la sucursal con la id: "+ sucursal.getId());
-			return Optional.of(sucursal);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-			logger.error("La id recibida es null");
-			return Optional.empty();
-		}
-	}
+		logger.info("Solicitud de borrado del codigoDetalle: " + sucursal.toString());
 
+		try {
+			if (getSucursal(sucursal.getId()).isEmpty()) {
+				logger.error("No existe la sucursal con id: " + sucursal.getId() + " en la base de datos");
+				throw new IllegalArgumentException(
+						"No existe la sucursal con id: " + sucursal.getId() + " en la base de datos");
+			}
+			
+			sucursalRepo.deleteById(sucursal.getId());
+			logger.debug("Se borro correctamente la sucursal: " + sucursal.toString());
+			return Optional.of(sucursal);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("No se pudo remover la sucursal: " + sucursal.toString());
+			return Optional.empty();
+
+		}
+
+	}
 }

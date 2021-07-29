@@ -47,6 +47,15 @@ public class Sucursal {
 	public Integer getId() {
 		return id;
 	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	@Override
+	public String toString() {
+		return "Sucursal [id=" + id + ", direccion=" + direccion + ", ciudad=" + ciudad + ", cuitEmpresa=" + cuitEmpresa
+				+ "]";
+	}
+	
 
 	
 }

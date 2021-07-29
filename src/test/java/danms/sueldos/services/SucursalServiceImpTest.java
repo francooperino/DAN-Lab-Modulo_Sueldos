@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,6 +21,9 @@ import danms.sueldos.services.interfaces.SucursalService;
 @ActiveProfiles("testing")
 class SucursalServiceImpTest {
 
+	private static final 
+	Logger logger = LoggerFactory.getLogger(SucursalServiceImpTest.class);
+	
 	@Autowired
 	SucursalService sucursalService;
 
@@ -27,11 +32,13 @@ class SucursalServiceImpTest {
 
 	@BeforeEach
 	void limpiarRepositorios() {
+		logger.info("Borrar todo los repositorios");
 		sucursalRepo.deleteAll();
 	}
 
 	@Test
 	void guardarSucursales() {
+		logger.info("Inicio test: guardarSucursales");
 		// Sucursal 1
 		Sucursal s1 = new Sucursal();
 		s1.setCiudad("Lucas Gonzalez");
@@ -68,11 +75,12 @@ class SucursalServiceImpTest {
 
 		Optional<Sucursal> optRepoS3 = sucursalRepo.findById(optS3.get().getId());
 		assertTrue(optRepoS3.isPresent());
-
+		logger.info("Fin test: guardarSucursales");
 	}
 
 	@Test
 	void actualizarSolicitud() {
+		logger.info("Inicio test: actualizarSolicitud");
 		// Sucursal 1
 		Sucursal s1 = new Sucursal();
 		s1.setCiudad("Lucas Gonzalez");
@@ -107,11 +115,48 @@ class SucursalServiceImpTest {
 		assertEquals(nuevaCiudad, optRepoS1.get().getCiudad());
 		assertEquals(nuevaDireccion, optRepoS1.get().getDireccion());
 		assertEquals(nuevaCuitEmpresa, optRepoS1.get().getCuitEmpresa());
+		logger.info("Fin test: actualizarSolicitud");
+	}
 
+	@Test
+	void actualizarSucursal_IdNull() {
+		logger.info("Inicio test: actualizarSucursal_IdNull");
+		// Sucursal 1
+		Sucursal s1 = new Sucursal();
+		s1.setCiudad("Lucas Gonzalez");
+		s1.setCuitEmpresa("30-289615936");
+		s1.setDireccion("Hernandez 321");
+
+		// Chequeamos que el retorno sea el correcto
+		Optional<Sucursal> optS1 = sucursalService.guardarSucursal(s1);
+		assertTrue(optS1.isPresent());
+		// ----Modificamos la sucursal
+		s1 = optS1.get();
+		s1.setId(null); // seteamos en null
+		// ----Actualizacmos
+		optS1 = sucursalService.actualizarSucursal(s1);
+		assertTrue(optS1.isEmpty());
+		logger.info("Fin test: actualizarSucursal_IdNull");
+	}
+
+	@Test
+	void actualizarSucursal_NoExistente() {
+		logger.info("Inicio test: actualizarSucursal_NoExistente");
+		Sucursal s1 = new Sucursal();
+		s1.setId(444);
+		//Nunca guardamos la solicitud
+		
+		// ----Modificamos la sucursal
+		s1.setDireccion("Assault 123");
+		// ----Actualizacmos
+		Optional<Sucursal> optS1 = sucursalService.actualizarSucursal(s1);
+		assertTrue(optS1.isEmpty());
+		logger.info("Fin test: actualizarSucursal_NoExistente");
 	}
 
 	@Test
 	void getSucursal() {
+		logger.info("Inicio test: getSucursal");
 		// Sucursal 1
 		Sucursal s1 = new Sucursal();
 		s1.setCiudad("Lucas Gonzalez");
@@ -125,11 +170,12 @@ class SucursalServiceImpTest {
 		// Obetenemos la sucursal
 		Optional<Sucursal> optRepoS1 = sucursalRepo.findById(optS1.get().getId());
 		assertTrue(optRepoS1.isPresent());
-
+		logger.info("Fin test: getSucursal");
 	}
 
 	@Test
 	void getAllSucursal() {
+		logger.info("Inicio test: getAllSucursal");
 		// Sucursal 1
 		Sucursal s1 = new Sucursal();
 		s1.setCiudad("Lucas Gonzalez");
@@ -159,10 +205,12 @@ class SucursalServiceImpTest {
 		// Obetenemos la sucursales
 		List<Sucursal> listaSucursales = sucursalService.getAllSucursal();
 		assertEquals(3, listaSucursales.size());
+		logger.info("Fin test: getAllSucursal");
 	}
 
 	@Test
 	void borrarSucursal() {
+		logger.info("Inicio test: borrarSucursal");
 		// Sucursal 1
 		Sucursal s1 = new Sucursal();
 		s1.setCiudad("Lucas Gonzalez");
@@ -179,11 +227,12 @@ class SucursalServiceImpTest {
 		// Obetenemos la sucursal
 		Optional<Sucursal> optRepoS1 = sucursalRepo.findById(optS1.get().getId());
 		assertTrue(optRepoS1.isEmpty());
-
+		logger.info("Fin test: borrarSucursal");
 	}
 
 	@Test
-	void borrarSucursal_ID_NoExiste() {
+	void borrarSucursal_NoExiste() {
+		logger.info("Inicio test: borrarSucursal_NoExiste");
 		// Sucursal 1
 		Sucursal s1 = new Sucursal();
 		s1.setCiudad("Lucas Gonzalez");
@@ -198,6 +247,17 @@ class SucursalServiceImpTest {
 		optS1.get().setId(4500);
 		Optional<Sucursal> optSucursalBorrada = sucursalService.borrarSucursal(optS1.get());
 		assertTrue(optSucursalBorrada.isEmpty());
+		logger.info("Fin test: borrarSucursal_NoExiste");
+	}
+	@Test
+	void borrarSucursal_IDNull() {
+		logger.info("Inicio test: borrarSucursal_IDNull");
+		// Sucursal 1
+		Sucursal s1 = new Sucursal();
+		s1.setId(null);
+		Optional<Sucursal> optSucursalBorrada = sucursalService.borrarSucursal(s1);
+		assertTrue(optSucursalBorrada.isEmpty());
+		logger.info("Fin test: borrarSucursal_IDNull");
 	}
 
 }
