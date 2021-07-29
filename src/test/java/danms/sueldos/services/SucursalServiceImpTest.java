@@ -168,9 +168,36 @@ class SucursalServiceImpTest {
 		assertTrue(optS1.isPresent());
 
 		// Obetenemos la sucursal
-		Optional<Sucursal> optRepoS1 = sucursalRepo.findById(optS1.get().getId());
+		Optional<Sucursal> optRepoS1 = sucursalService.getSucursal(optS1.get().getId());
 		assertTrue(optRepoS1.isPresent());
 		logger.info("Fin test: getSucursal");
+	}
+	@Test
+	void getSucursal_IdNula() {
+		logger.info("Inicio test: getSucursal_IdNula");
+		// Sucursal 1
+		Sucursal s1 = new Sucursal();
+		s1.setCiudad("Lucas Gonzalez");
+		s1.setCuitEmpresa("30-289615936");
+		s1.setDireccion("Hernandez 321");
+		s1.setId(null); // Id nula
+
+		// Obetenemos la sucursal
+		Optional<Sucursal> optRepoS1 = sucursalService.getSucursal(s1.getId());
+		assertTrue(optRepoS1.isEmpty());
+		logger.info("Fin test: getSucursal_IdNula");
+	}
+	@Test
+	void getSucursal_NoExiste() {
+		logger.info("Inicio test: getSucursal_NoExiste");
+		// Sucursal 1
+		Sucursal s1 = new Sucursal();
+		s1.setId(4999);
+		
+		// Obetenemos la sucursal
+		Optional<Sucursal> optRepoS1 = sucursalService.getSucursal(s1.getId());
+		assertTrue(optRepoS1.isEmpty());
+		logger.info("Fin test: getSucursal_NoExiste");
 	}
 
 	@Test

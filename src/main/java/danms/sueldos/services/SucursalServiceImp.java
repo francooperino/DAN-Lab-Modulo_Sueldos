@@ -74,8 +74,7 @@ public class SucursalServiceImp implements SucursalService {
 			Optional<Sucursal> optSucursal = sucursalRepo.findById(idSucursal);
 			// Chequemos si la encontro
 			if (optSucursal.isEmpty()) {
-				logger.debug("No se encontro la sucursal con la id: " + idSucursal);
-				return optSucursal;
+				throw new Exception("No se encontro la sucursal con la id: " + idSucursal+ " en la DB");
 			}
 			logger.debug("Se encontro la sucursal con la id: " + idSucursal);
 			return optSucursal;
@@ -83,6 +82,10 @@ public class SucursalServiceImp implements SucursalService {
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 			logger.error("La id recibida es null");
+			return Optional.empty();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("No se encontro la sucursal con la id: " + idSucursal+ " en la DB");
 			return Optional.empty();
 		}
 	}
@@ -94,7 +97,7 @@ public class SucursalServiceImp implements SucursalService {
 
 	@Override
 	public Optional<Sucursal> borrarSucursal(Sucursal sucursal) {
-		logger.info("Solicitud de borrado del codigoDetalle: " + sucursal.toString());
+		logger.info("Solicitud de borrado de la sucursal: " + sucursal.toString());
 
 		try {
 			if (getSucursal(sucursal.getId()).isEmpty()) {
