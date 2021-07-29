@@ -9,8 +9,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import org.springframework.lang.NonNull;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
+@Transactional(readOnly= true)
 public class Empleado {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //valor autonumerico
@@ -29,6 +31,14 @@ public class Empleado {
 		super();
 		this.email = email;
 		this.datoBancario = datoBancario;
+	}
+	
+	
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public Integer getId() {
+		return id;
 	}
 	public String getEmail() {
 		return email;
