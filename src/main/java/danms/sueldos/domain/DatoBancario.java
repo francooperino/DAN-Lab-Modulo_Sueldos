@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 public class DatoBancario {
 	@Id
@@ -31,6 +33,13 @@ public class DatoBancario {
 		this.empleado = empleado;
 	}
 	
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	public Empleado getEmpleado() {
 		return empleado;
 	}
