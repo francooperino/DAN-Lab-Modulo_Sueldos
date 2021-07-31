@@ -7,9 +7,11 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +21,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+
 import danms.sueldos.domain.DatoBancario;
 import danms.sueldos.domain.Empleado;
-import danms.sueldos.domain.Sucursal;
 import danms.sueldos.services.dao.DatoBancarioRepository;
 import danms.sueldos.services.dao.EmpleadoRepository;
 import danms.sueldos.services.interfaces.EmpleadoService;
@@ -33,6 +35,7 @@ import danms.sueldos.services.interfaces.EmpleadoService;
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 //
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class) //Sirve para habilitar orden en la ejecucion de los metods
 @ActiveProfiles("testing")
 class EmpleadoServiceImpTest {
 
@@ -50,6 +53,7 @@ class EmpleadoServiceImpTest {
 	@LocalServerPort
 	String puerto;
 
+	
 	@BeforeAll
 	void limpiarRepositoriosInicial() {
 		logger.info("El puerto en donde ejecuta es: " + puerto);
@@ -64,6 +68,7 @@ class EmpleadoServiceImpTest {
 	}
 
 	@Test
+	@Order(1) //Al ejecutar primero siempre carga el sql.
 	@Sql("/insert-data-testing1.sql")
 	void getEmpleado() {
 		logger.info("Inicio test: getEmpleado");
@@ -160,7 +165,6 @@ class EmpleadoServiceImpTest {
 		datoBancario1.setNombreBanco("Banco Nacion");
 		datoBancario1.setNumeroCuenta("2563432564676215823");
 		datoBancario1.setEmpleado(optEmpleado1.get());
-	
 
 		// Chequeamos que el retorno sea el correcto
 		Optional<DatoBancario> optDB1 = empleadoService.guardarDatoBancario(datoBancario1);
@@ -170,7 +174,7 @@ class EmpleadoServiceImpTest {
 		datoBancario1 = optDB1.get();
 		// Nuevos campos:
 		String nuevaNombreBanco = "Banco Sin Plata";
-		String nuevaNumeroCuenta= "00000000000000000";
+		String nuevaNumeroCuenta = "00000000000000000";
 		datoBancario1.setNombreBanco(nuevaNombreBanco);
 		datoBancario1.setNumeroCuenta(nuevaNumeroCuenta);
 
@@ -189,4 +193,71 @@ class EmpleadoServiceImpTest {
 		logger.info("Fin test: actualizar_datoBancario");
 	}
 
+	@Test
+	void getDatoBancario() {
+		logger.info("Inicio test: getDatoBancario");
+		// EMPLEADOS NECESARIOS:
+		Optional<Empleado> optEmpleado = empleadoRepo.findById(1);
+		assertTrue(optEmpleado.isPresent());
+		// ---------------------------------------------------
+		// DATO BANCARIO 1
+		DatoBancario datoBancario = new DatoBancario();
+		datoBancario.setNombreBanco("Banco de Oro");
+		datoBancario.setNumeroCuenta("32344556676215823");
+		datoBancario.setEmpleado(optEmpleado.get());
+
+		// Chequeamos que el retorno sea el correcto
+		Optional<DatoBancario> optDB = empleadoService.guardarDatoBancario(datoBancario);
+		assertTrue(optDB.isPresent());
+		// Lo buscamos
+		Optional<DatoBancario> optDBBuscado = empleadoService.getDatoBancario(optDB.get().getId());
+		assertTrue(optDBBuscado.isPresent());
+		logger.info("Fin test: getDatoBancario");
+	}
+
+	@Test
+	void getAll_DatoBancario() {
+		logger.info("Inicio test: getDatoBancario");
+		// EMPLEADOS NECESARIOS:
+		Optional<Empleado> optEmpleado = empleadoRepo.findById(1);
+		assertTrue(optEmpleado.isPresent());
+		// ---------------------------------------------------
+		// DATO BANCARIO 1
+		DatoBancario datoBancario = new DatoBancario();
+		datoBancario.setNombreBanco("Banco de Plata");
+		datoBancario.setNumeroCuenta("3234455662347623");
+		datoBancario.setEmpleado(optEmpleado.get());
+		// Chequeamos que el retorno sea el correcto
+		Optional<DatoBancario> optDB = empleadoService.guardarDatoBancario(datoBancario);
+		assertTrue(optDB.isPresent());
+
+		List<DatoBancario> lista = empleadoService.getAllDatoBancario();
+		assertNotNull(lista);
+		assertTrue(lista.size() > 0);
+	}
+
+	@Test
+	void borrarDatoBancario() {
+		logger.info("Inicio test: borrarDatoBancario");
+		// EMPLEADOS NECESARIOS:
+		Optional<Empleado> optEmpleado = empleadoRepo.findById(1);
+		assertTrue(optEmpleado.isPresent());
+		// ---------------------------------------------------
+		// DATO BANCARIO 1
+		DatoBancario datoBancario = new DatoBancario();
+		datoBancario.setNombreBanco("Banco de Bronce");
+		datoBancario.setNumeroCuenta("323435dsd6777623");
+		datoBancario.setEmpleado(optEmpleado.get());
+		// Chequeamos que el retorno sea el correcto
+		Optional<DatoBancario> optDB = empleadoService.guardarDatoBancario(datoBancario);
+		assertTrue(optDB.isPresent());
+
+		// Borramos el dato bancario
+		empleadoService.borrarDatoBancario(optDB.get());
+
+		// Obetenemos la sucursal
+		Optional<DatoBancario> optRepoDB1 = datoBancarioRepo.findById(optDB.get().getId());
+		assertTrue(optRepoDB1.isEmpty());
+		logger.info("Fin test: borrarDatoBancario");
+	}
 }

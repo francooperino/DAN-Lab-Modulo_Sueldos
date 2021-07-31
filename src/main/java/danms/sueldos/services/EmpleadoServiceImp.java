@@ -10,10 +10,8 @@ import org.springframework.stereotype.Service;
 
 import danms.sueldos.domain.DatoBancario;
 import danms.sueldos.domain.Empleado;
-import danms.sueldos.domain.Sucursal;
 import danms.sueldos.services.dao.DatoBancarioRepository;
 import danms.sueldos.services.dao.EmpleadoRepository;
-import danms.sueldos.services.dao.SucursalRepository;
 import danms.sueldos.services.interfaces.EmpleadoService;
 
 @Service
