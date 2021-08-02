@@ -22,7 +22,6 @@ import danms.sueldos.services.dao.DetalleReciboRepository;
 import danms.sueldos.services.dao.ReciboSueldoRepository;
 import danms.sueldos.services.interfaces.ReciboSueldoService;
 
-
 @ActiveProfiles("testing")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReciboSueldoServiceImpTest {
@@ -35,21 +34,19 @@ class ReciboSueldoServiceImpTest {
 
 	@Autowired
 	DetalleReciboRepository detalleReciboRepo;
-	
+
 	@Autowired
 	ReciboSueldoRepository reciboRepo;
-	
+
 	@LocalServerPort
 	String puerto;
-	
 
-	
 	@BeforeEach
 	void limpiarRepositorios() {
 		reciboRepo.deleteAll();
 		detalleReciboRepo.deleteAll();
 		codigoDetalleRepo.deleteAll();
-		
+
 	}
 
 	@Test
@@ -220,15 +217,8 @@ class ReciboSueldoServiceImpTest {
 
 	}
 
-	/*
-	 * @Autowired ReciboSueldoService reciboSueldoService;
-	 * 
-	 * @Autowired CodigoDetalleRepository codigoDetalleRepo;
-	 * 
-	 * @Autowired DetalleReciboRepository detalleReciboRepo;
-	 */
 	@Test
-	//Test para Detalle recibo
+	// Test para Detalle recibo
 	void guardarDetalleRecibo() {
 
 		// codigoDetalle 1
@@ -273,23 +263,17 @@ class ReciboSueldoServiceImpTest {
 		dr3.setDeduccion(null);
 		dr3.setPorcentaje(40.0);
 		// ---------------------------------------------------
-		ReciboSueldo rs = new ReciboSueldo();
-		rs.setTotalBruto(1500.0);
-		rs.setTotalNeto(130.0);
-		rs.setLugarDePago("ACA SE PAGA");
-		rs.setSucursal(null);
-		rs.setPagado(true);
-		rs.setFechaEmision(Date.valueOf("2021-07-21"));
-		rs.setFechaDePago(Date.valueOf("2021-07-15"));
-		rs.setDeducciones(15000000.1);
-		rs.setNumeroRecibo(70);
-		
-		rs.addDetalleRecibo(dr1);
-		rs.addDetalleRecibo(dr2);
-		rs.addDetalleRecibo(dr3);
-		
-		
-		
+		/*
+		 * ReciboSueldo rs = new ReciboSueldo(); rs.setTotalBruto(1500.0);
+		 * rs.setTotalNeto(130.0); rs.setLugarDePago("ACA SE PAGA");
+		 * rs.setSucursal(null); rs.setPagado(true);
+		 * rs.setFechaEmision(Date.valueOf("2021-07-21"));
+		 * rs.setFechaDePago(Date.valueOf("2021-07-15")); rs.setDeducciones(15000000.1);
+		 * rs.setNumeroRecibo(70);
+		 * 
+		 * rs.addDetalleRecibo(dr1); rs.addDetalleRecibo(dr2); rs.addDetalleRecibo(dr3);
+		 */
+
 		// Chequeamos que el retorno sea el correcto
 		Optional<DetalleRecibo> optDr1 = reciboSueldoService.guardarDetalleRecibo(dr1);
 		assertTrue(optDr1.isPresent());
@@ -299,9 +283,8 @@ class ReciboSueldoServiceImpTest {
 
 		Optional<DetalleRecibo> optDr3 = reciboSueldoService.guardarDetalleRecibo(dr3);
 		assertTrue(optDr3.isPresent());
-		
-		rs = reciboRepo.saveAndFlush(rs);
-		
+
+		// rs = reciboRepo.saveAndFlush(rs);
 
 		// Chequeamos que se haya guardado en el repository
 		Optional<DetalleRecibo> optRepoDr1 = detalleReciboRepo.findById(optDr1.get().getId());
@@ -314,63 +297,98 @@ class ReciboSueldoServiceImpTest {
 		assertTrue(optRepoDr3.isPresent());
 
 	}
-/*
+
 	@Test
-	// Test para codigoDetalle
-	void actualizarCodigoDetalle() {
+	// Test para DetalleRecibo
+	void actualizarDetalleRecibo() {
 		// codigoDetalle 1
 		CodigoDetalle cd1 = new CodigoDetalle();
 		cd1.setCodigoDetalle(100);
 		cd1.setDescripcion("La primer descripcion");
 
-		// Chequeamos que el retorno sea el correcto
-		Optional<CodigoDetalle> optCd1 = reciboSueldoService.guardarCodigoDetalle(cd1);
-		assertTrue(optCd1.isPresent());
+		// codigoDetalle 2
+		CodigoDetalle cd2 = new CodigoDetalle();
+		cd2.setCodigoDetalle(200);
+		cd2.setDescripcion("La segunda descripcion");
 
-		// ----Modificamos el codigoDetalle
-		cd1 = optCd1.get();
+		// ---------------------------------------------------
+
+		cd1 = codigoDetalleRepo.saveAndFlush(cd1);
+		cd2 = codigoDetalleRepo.saveAndFlush(cd2);
+
+		// detalleRecibo 1
+		DetalleRecibo dr1 = new DetalleRecibo();
+		dr1.setCodigoDetalle(cd1);
+		dr1.setHaber(1500.00);
+		dr1.setDeduccion(null);
+		dr1.setPorcentaje(10.5);
+
+		// Chequeamos que el retorno sea el correcto
+		Optional<DetalleRecibo> optDr1 = reciboSueldoService.guardarDetalleRecibo(dr1);
+		assertTrue(optDr1.isPresent());
+
+		// ----Modificamos el detalleRecibo
+
 		// Nuevos campos:
-		String nuevaDescripcion = "Ahora soy otra descripcion";
-		Integer nuevoCodigoDetalle = 150;
-		cd1.setDescripcion(nuevaDescripcion);
-		cd1.setCodigoDetalle(nuevoCodigoDetalle);
+		Double nuevoHaber = null;
+		Double nuevaDeduccion = 300.0;
+		Double nuevoPorcentaje = 20.0;
+
+		// Seteamos los nuevos campos
+		dr1.setCodigoDetalle(cd2);
+		dr1.setHaber(nuevoHaber);
+		dr1.setDeduccion(nuevaDeduccion);
+		dr1.setPorcentaje(nuevoPorcentaje);
 
 		// ----Actualizamos
-		optCd1 = reciboSueldoService.actualizarCodigoDetalle(cd1);
+		optDr1 = reciboSueldoService.actualizarDetalleRecibo(dr1);
 
 		// ----Comprobamos actualizacion en el retorno
-		assertEquals(nuevaDescripcion, optCd1.get().getDescripcion());
-		assertEquals(nuevoCodigoDetalle, optCd1.get().getCodigoDetalle());
+		assertTrue(optDr1.isPresent());
+		assertEquals(nuevoHaber, optDr1.get().getHaber());
+		assertEquals(nuevaDeduccion, optDr1.get().getDeduccion());
+		assertEquals(nuevoPorcentaje, optDr1.get().getPorcentaje());
+		assertEquals(cd2.getCodigoDetalle(), optDr1.get().getCodigoDetalle().getCodigoDetalle());
 
 		// Comprabamos actualizacion en el repositorio
-		Optional<CodigoDetalle> optRepoCd1 = codigoDetalleRepo.findById(optCd1.get().getId());
-		assertTrue(optRepoCd1.isPresent());
-		assertEquals(nuevaDescripcion, optRepoCd1.get().getDescripcion());
-		assertEquals(nuevoCodigoDetalle, optRepoCd1.get().getCodigoDetalle());
+		Optional<DetalleRecibo> optRepoDr1 = detalleReciboRepo.findById(optDr1.get().getId());
+		assertTrue(optRepoDr1.isPresent());
+		assertEquals(nuevoHaber, optRepoDr1.get().getHaber());
+		assertEquals(nuevaDeduccion, optRepoDr1.get().getDeduccion());
+		assertEquals(nuevoPorcentaje, optRepoDr1.get().getPorcentaje());
+		assertEquals(cd2.getCodigoDetalle(), optRepoDr1.get().getCodigoDetalle().getCodigoDetalle());
 
 	}
 
 	@Test
-	// Test para codigoDetalle
-	void getCodigoDetalle() {
+	// Test para DetalleRecibo
+	void getDetalleRecibo() {
 		// codigoDetalle 1
 		CodigoDetalle cd1 = new CodigoDetalle();
 		cd1.setCodigoDetalle(100);
 		cd1.setDescripcion("La primer descripcion");
 
-		// Chequeamos que el retorno sea el correcto
-		Optional<CodigoDetalle> optCd1 = reciboSueldoService.guardarCodigoDetalle(cd1);
-		assertTrue(optCd1.isPresent());
+		codigoDetalleRepo.save(cd1);
 
-		// Obetenemos la sucursal
-		Optional<CodigoDetalle> optRepoCs1 = codigoDetalleRepo.findById(optCd1.get().getId());
-		assertTrue(optRepoCs1.isPresent());
+		// detalleRecibo 1
+		DetalleRecibo dr1 = new DetalleRecibo();
+		dr1.setCodigoDetalle(cd1);
+		dr1.setHaber(1500.00);
+		dr1.setDeduccion(null);
+		dr1.setPorcentaje(10.5);
+
+		// Chequeamos que el retorno sea el correcto
+		Optional<DetalleRecibo> optDr1 = reciboSueldoService.guardarDetalleRecibo(dr1);
+		assertTrue(optDr1.isPresent());
+
+		// Obetenemos el detalleRecibo
+		Optional<DetalleRecibo> optRepoDr1 = detalleReciboRepo.findById(optDr1.get().getId());
+		assertTrue(optRepoDr1.isPresent());
 
 	}
 
-	@Test
-	// Test para codigoDetalle
-	void getAllCodigoDetalle() {
+	@Test // Test para detalleRecibo
+	void getAllDetalleRecibo() {
 		// codigoDetalle 1
 		CodigoDetalle cd1 = new CodigoDetalle();
 		cd1.setCodigoDetalle(100);
@@ -388,46 +406,104 @@ class ReciboSueldoServiceImpTest {
 
 		// ---------------------------------------------------
 
+		cd1 = codigoDetalleRepo.saveAndFlush(cd1);
+		cd2 = codigoDetalleRepo.saveAndFlush(cd2);
+		cd3 = codigoDetalleRepo.saveAndFlush(cd3);
+
+		// detalleRecibo 1
+		DetalleRecibo dr1 = new DetalleRecibo();
+		dr1.setCodigoDetalle(cd1);
+		dr1.setHaber(1500.00);
+		dr1.setDeduccion(null);
+		dr1.setPorcentaje(10.5);
+
+		// detalleRecibo 2
+		DetalleRecibo dr2 = new DetalleRecibo();
+		dr2.setCodigoDetalle(cd2);
+		dr2.setHaber(null);
+		dr2.setDeduccion(300.0);
+		dr2.setPorcentaje(15.0);
+
+		// detalleRecibo 2
+		DetalleRecibo dr3 = new DetalleRecibo();
+		dr3.setCodigoDetalle(cd3);
+		dr3.setHaber(400.0);
+		dr3.setDeduccion(null);
+		dr3.setPorcentaje(40.0);
+
+		// ---------------------------------------------------
+
 		// Chequeamos que el retorno sea el correcto
-		Optional<CodigoDetalle> optCd1 = reciboSueldoService.guardarCodigoDetalle(cd1);
-		assertTrue(optCd1.isPresent());
+		Optional<DetalleRecibo> optDr1 = reciboSueldoService.guardarDetalleRecibo(dr1);
+		assertTrue(optDr1.isPresent());
 
-		Optional<CodigoDetalle> optCd2 = reciboSueldoService.guardarCodigoDetalle(cd2);
-		assertTrue(optCd2.isPresent());
+		Optional<DetalleRecibo> optDr2 = reciboSueldoService.guardarDetalleRecibo(dr2);
+		assertTrue(optDr2.isPresent());
 
-		Optional<CodigoDetalle> optCd3 = reciboSueldoService.guardarCodigoDetalle(cd3);
-		assertTrue(optCd3.isPresent());
+		Optional<DetalleRecibo> optDr3 = reciboSueldoService.guardarDetalleRecibo(dr3);
+		assertTrue(optDr3.isPresent());
 
-		// Obetenemos la sucursales
-		List<CodigoDetalle> listadCodigoDetalles = reciboSueldoService.getAllCodigoDetalle();
-		assertEquals(3, listadCodigoDetalles.size());
+		// Obetenemos los detalles Recibo
+		List<DetalleRecibo> listaDetalleRecibo = reciboSueldoService.getAllDetalleRecibo();
+		assertEquals(3, listaDetalleRecibo.size());
 	}
 
 	@Test
 	// Test para codigoDetalle
-	void borrarCodigoDetalle() {
+	void borrarDetalleRecibo() {
 		// codigoDetalle 1
 		CodigoDetalle cd1 = new CodigoDetalle();
 		cd1.setCodigoDetalle(100);
 		cd1.setDescripcion("La primer descripcion");
 
+		codigoDetalleRepo.save(cd1);
+
+		// detalleRecibo 1
+		DetalleRecibo dr1 = new DetalleRecibo();
+		dr1.setCodigoDetalle(cd1);
+		dr1.setHaber(1500.00);
+		dr1.setDeduccion(null);
+		dr1.setPorcentaje(10.5);
+
 		// Chequeamos que el retorno sea el correcto
-		Optional<CodigoDetalle> optCd1 = reciboSueldoService.guardarCodigoDetalle(cd1);
-		assertTrue(optCd1.isPresent());
+		Optional<DetalleRecibo> optDr1 = reciboSueldoService.guardarDetalleRecibo(dr1);
+		assertTrue(optDr1.isPresent());
+
+		// Obetenemos el detalleRecibo
+		Optional<DetalleRecibo> optRepoDr1 = detalleReciboRepo.findById(optDr1.get().getId());
+		assertTrue(optRepoDr1.isPresent());
 
 		// Borramos el codigo detalle
-		reciboSueldoService.borrarCodigoDetalle(optCd1.get());
+		reciboSueldoService.borrarDetalleRecibo(dr1);
 
 		// Obetenemos el codigo detalle
-		Optional<CodigoDetalle> optRepoCd1 = reciboSueldoService.getCodigoDetalle(optCd1.get().getId());
-		assertTrue(optRepoCd1.isEmpty());
-
+		Optional<DetalleRecibo> optD = reciboSueldoService.getDetalleRecibo(optRepoDr1.get().getId());
+		assertTrue(optD.isEmpty());
 	}
 
 	@Test
-	// Test para codigoDetalle
-	void borrarCodigoDetalleNoExistente() {
-	*/
-	
-	
+	// Test para DetalleRecibo
+	void borrarDetalleReciboNoExistente() {
+		// codigoDetalle 1
+		CodigoDetalle cd1 = new CodigoDetalle();
+		cd1.setCodigoDetalle(100);
+		cd1.setDescripcion("La primer descripcion");
+
+		codigoDetalleRepo.save(cd1);
+		// detalleRecibo 1
+		DetalleRecibo dr1 = new DetalleRecibo();
+		dr1.setId(9999999);
+		dr1.setCodigoDetalle(cd1);
+		dr1.setHaber(1500.00);
+		dr1.setDeduccion(null);
+		dr1.setPorcentaje(10.5);
+
+		// Borramos el codigo detalle
+		Optional<DetalleRecibo> opDr1 = reciboSueldoService.borrarDetalleRecibo(dr1);
+
+		// Obetenemos el codigoDetalle
+		assertTrue(opDr1.isEmpty());
+
+	}
+
 }
