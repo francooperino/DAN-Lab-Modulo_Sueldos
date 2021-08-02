@@ -6,12 +6,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+
 @Entity
 public class CodigoDetalle {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //valor autonumerico
 	@Column(name="ID_CODIGO_DETALLE")
 	private Integer id;
+	@Column(unique = true)
 	private Integer codigoDetalle;
 	private String descripcion;
 	
@@ -27,6 +29,17 @@ public class CodigoDetalle {
 		this.codigoDetalle = codigoDetalle;
 		this.descripcion = descripcion;
 	}
+	
+	public Integer getId() {
+		return id;
+	}
+
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+
 	public Integer getCodigoDetalle() {
 		return codigoDetalle;
 	}
@@ -39,6 +52,14 @@ public class CodigoDetalle {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
+
+
+	@Override
+	public String toString() {
+		return "CodigoDetalle [id=" + id + ", codigoDetalle=" + codigoDetalle + ", descripcion=" + descripcion + "]";
+	}
+	
+	
 	
 	
 	
