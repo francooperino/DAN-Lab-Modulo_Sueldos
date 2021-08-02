@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.lang.NonNull;
 
 @Entity
@@ -32,7 +35,7 @@ public class ReciboSueldo {
 	
 	@NonNull
 	@OneToMany
-	@JoinColumn(name = "ID_DETALLE_RECIBO")
+	@JoinColumn(name = "ID_RECIBO_SUELDO")
 	private List<DetalleRecibo> listaDetalleRecibo;
 	
 	@NonNull
@@ -123,7 +126,7 @@ public class ReciboSueldo {
 		this.listaDetalleRecibo = listaDetalleRecibo;
 	}
 	
-	public void addListaDetalleRecibo(DetalleRecibo detalleRecibo) {
+	public void addDetalleRecibo(DetalleRecibo detalleRecibo) {
 		this.listaDetalleRecibo.add(detalleRecibo);
 	}
 

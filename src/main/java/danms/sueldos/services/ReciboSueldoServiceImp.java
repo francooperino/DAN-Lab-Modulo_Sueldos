@@ -110,8 +110,9 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 		logger.info("Verificamos si existe el codigo detalle: " + detalleRecibo.getCodigoDetalle().toString());
 
 		// Si existe el codigo detalle guardamos directamente el detalle, sino guardamos primero el codigoDetalle
-		Optional<CodigoDetalle> optCodigo = Optional.empty();
-		if (getCodigoDetalle(detalleRecibo.getCodigoDetalle().getCodigoDetalle()).isEmpty()) {
+		Optional<CodigoDetalle> optCodigo = codigoDetalleRepository.findByCodigoDetalle(detalleRecibo.getCodigoDetalle().getCodigoDetalle());
+		//TODO: Revisar esto, puede estar mal
+		if (optCodigo.isEmpty()) {
 			optCodigo = guardarCodigoDetalle(detalleRecibo.getCodigoDetalle());
 		}
 		try {
