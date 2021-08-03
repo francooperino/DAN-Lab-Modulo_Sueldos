@@ -7,5 +7,5 @@ import danms.sueldos.domain.DetalleRecibo;
 
 @Repository
 public interface DetalleReciboRepository extends JpaRepository<DetalleRecibo, Integer>{
-
+	
 }

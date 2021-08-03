@@ -13,13 +13,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import danms.sueldos.domain.CodigoDetalle;
+import danms.sueldos.domain.DatoBancario;
 import danms.sueldos.domain.DetalleRecibo;
+import danms.sueldos.domain.Empleado;
 import danms.sueldos.domain.ReciboSueldo;
+import danms.sueldos.domain.Sucursal;
 import danms.sueldos.services.dao.CodigoDetalleRepository;
+import danms.sueldos.services.dao.DatoBancarioRepository;
 import danms.sueldos.services.dao.DetalleReciboRepository;
+import danms.sueldos.services.dao.EmpleadoRepository;
 import danms.sueldos.services.dao.ReciboSueldoRepository;
+import danms.sueldos.services.dao.SucursalRepository;
 import danms.sueldos.services.interfaces.ReciboSueldoService;
 
 @ActiveProfiles("testing")
@@ -37,6 +44,15 @@ class ReciboSueldoServiceImpTest {
 
 	@Autowired
 	ReciboSueldoRepository reciboRepo;
+
+	@Autowired
+	SucursalRepository sucursalRepo;
+
+	@Autowired
+	EmpleadoRepository empleadoRepo;
+
+	@Autowired
+	DatoBancarioRepository datoBancarioRepo;
 
 	@LocalServerPort
 	String puerto;
@@ -256,7 +272,7 @@ class ReciboSueldoServiceImpTest {
 		dr2.setDeduccion(300.0);
 		dr2.setPorcentaje(15.0);
 
-		// detalleRecibo 2
+		// detalleRecibo 3
 		DetalleRecibo dr3 = new DetalleRecibo();
 		dr3.setCodigoDetalle(cd3);
 		dr3.setHaber(400.0);
@@ -503,6 +519,102 @@ class ReciboSueldoServiceImpTest {
 
 		// Obetenemos el codigoDetalle
 		assertTrue(opDr1.isEmpty());
+
+	}
+
+	@Test
+	@Sql("/insert-data-testing1.sql")
+	// Test para Recibo de sueldo
+
+	void guardarReciboSueldo() {
+		// codigoDetalle 1
+		CodigoDetalle cd1 = new CodigoDetalle();
+		cd1.setCodigoDetalle(100);
+		cd1.setDescripcion("La primer descripcion");
+
+		// codigoDetalle 2
+		CodigoDetalle cd2 = new CodigoDetalle();
+		cd2.setCodigoDetalle(200);
+		cd2.setDescripcion("La segunda descripcion");
+
+		// codigoDetalle 3
+		CodigoDetalle cd3 = new CodigoDetalle();
+		cd3.setCodigoDetalle(300);
+		cd3.setDescripcion("La tercer descripcion");
+
+		// ---------------------------------------------------
+
+		cd1 = codigoDetalleRepo.saveAndFlush(cd1);
+		cd2 = codigoDetalleRepo.saveAndFlush(cd2);
+		cd3 = codigoDetalleRepo.saveAndFlush(cd3);
+
+		// detalleRecibo 1
+		DetalleRecibo dr1 = new DetalleRecibo();
+		dr1.setCodigoDetalle(cd1);
+		dr1.setHaber(1500.00);
+		dr1.setDeduccion(null);
+		dr1.setPorcentaje(10.5);
+
+		// detalleRecibo 2
+		DetalleRecibo dr2 = new DetalleRecibo();
+		dr2.setCodigoDetalle(cd2);
+		dr2.setHaber(null);
+		dr2.setDeduccion(300.0);
+		dr2.setPorcentaje(15.0);
+
+		// detalleRecibo 3
+		DetalleRecibo dr3 = new DetalleRecibo();
+		dr3.setCodigoDetalle(cd3);
+		dr3.setHaber(400.0);
+		dr3.setDeduccion(null);
+		dr3.setPorcentaje(40.0);
+
+		// Sucursal 1
+		Sucursal s1 = new Sucursal();
+		s1.setCiudad("Lucas Gonzalez");
+		s1.setCuitEmpresa("30-289615936");
+		s1.setDireccion("Hernandez 321");
+
+		sucursalRepo.saveAndFlush(s1);
+		
+		Optional<Empleado> optEmpleado1 = empleadoRepo.findById(1);
+		assertTrue(optEmpleado1.isPresent());
+		
+		// DATO BANCARIO 1
+		DatoBancario datoBancario1 = new DatoBancario();
+		datoBancario1.setNombreBanco("Banco Entre Rios");
+		datoBancario1.setNumeroCuenta("256335889956215823");
+		datoBancario1.setEmpleado(optEmpleado1.get());
+
+		datoBancarioRepo.saveAndFlush(datoBancario1);
+		
+		ReciboSueldo rs = new ReciboSueldo();
+		rs.setTotalBruto(1500.0);
+		rs.setTotalNeto(130.0);
+		rs.setLugarDePago("ACA SE PAGA");
+		rs.setSucursal(s1);
+		rs.setPagado(true);
+		rs.setFechaEmision(Date.valueOf("2021-07-21"));
+		rs.setFechaDePago(Date.valueOf("2021-07-15"));
+		rs.setDeducciones(15000.1);
+		rs.setNumeroRecibo(70);
+		rs.setEmpleado(optEmpleado1.get());
+
+		rs.addDetalleRecibo(dr1);
+		rs.addDetalleRecibo(dr2);
+		rs.addDetalleRecibo(dr3);
+
+		// Chequeamos que el retorno sea el correcto
+
+		detalleReciboRepo.saveAndFlush(dr1);
+		detalleReciboRepo.saveAndFlush(dr2);
+		detalleReciboRepo.saveAndFlush(dr3);
+
+		// Guardamos el recibo de sueldo
+
+		Optional<ReciboSueldo> reciboOpt = reciboSueldoService.guardarReciboSueldo(rs);
+
+		assertTrue(reciboOpt.isPresent());
 
 	}
 
