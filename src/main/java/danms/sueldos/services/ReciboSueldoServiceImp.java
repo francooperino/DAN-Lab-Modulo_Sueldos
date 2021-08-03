@@ -293,8 +293,68 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 
 	@Override
 	public Optional<ReciboSueldo> actualizarReciboSueldo(ReciboSueldo reciboSueldo) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		logger.info("Solicitud de actualizacion recibo de sueldo");
+		logger.info("Verificamos si existe el recibo de sueldo: " + reciboSueldo.toString());
+
+		// Si existe el recibo sueldo actualizamos directamente, sino
+		// lanzamos excepcion
+		Optional<ReciboSueldo> optRecibo = reciboSueldoRepository.findById(reciboSueldo.getId());
+		try {
+		if(reciboSueldo.getId()!=null) {	
+			if (optRecibo.isPresent()) {
+				//Que exista empleado
+				if(empleadoService.getEmpleado(reciboSueldo.getEmpleado().getId()).isPresent()) {
+					//Que exista sucursal
+					if(sucursalService.getSucursal(reciboSueldo.getSucursal().getId()).isPresent()) {
+					
+						//Setear todo y actualizar
+						reciboSueldo.setListaDetalleRecibo(optRecibo.get().getListaDetalleRecibo());
+						reciboSueldoRepository.saveAndFlush(reciboSueldo);
+						return this.guardarReciboSueldo(reciboSueldo);
+						
+					}else {
+						//No existe la nueva sucursal
+						logger.debug("la sucursal a usar en el recibo no existe en la bdd");
+						throw new IllegalArgumentException("No existe la sucursal : "
+								+ reciboSueldo.getSucursal().toString() + " en la base de datos");
+					}
+					
+					
+				}else {
+					//No existe el nuevo empleado
+					logger.debug("El empleado a usar en el recibo no existe en la bdd");
+					throw new IllegalArgumentException("No existe el empleado: "
+							+ reciboSueldo.getEmpleado().toString() + " en la base de datos");
+				}
+				
+				
+				
+				
+			} else {
+				logger.debug("El Recibo a actualizar no existe en la base de datos");
+				throw new IllegalArgumentException("No existe el recibo: "
+						+ reciboSueldo.toString() + " en la base de datos");
+			}
+		}
+		else {
+			// Recibo ID es null
+			logger.debug("El Recibo tiene id NULL");
+			throw new Exception("El id Recibo es NULL: " + reciboSueldo.toString());
+			
+		}
+		
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.debug("Fallo al actualizar Recibo:" + reciboSueldo.toString());
+			return Optional.empty();
+		}
+
+		
+		
+		
+		
 	}
 
 	@Override

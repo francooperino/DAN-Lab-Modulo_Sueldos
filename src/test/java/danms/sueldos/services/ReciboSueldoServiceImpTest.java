@@ -64,7 +64,6 @@ class ReciboSueldoServiceImpTest {
 		reciboRepo.deleteAll();
 		detalleReciboRepo.deleteAll();
 		codigoDetalleRepo.deleteAll();
-
 	}
 
 	@Nested
@@ -630,6 +629,133 @@ class ReciboSueldoServiceImpTest {
 			assertTrue(reciboOpt.isPresent());
 
 		}
+
+		@Test
+		@Sql("/insert-data-testing1.sql")
+		void actualizarReciboSueldo() {
+			// codigoDetalle 1
+			CodigoDetalle cd1 = new CodigoDetalle();
+			cd1.setCodigoDetalle(100);
+			cd1.setDescripcion("La primer descripcion");
+
+			// codigoDetalle 2
+			CodigoDetalle cd2 = new CodigoDetalle();
+			cd2.setCodigoDetalle(200);
+			cd2.setDescripcion("La segunda descripcion");
+
+			// ---------------------------------------------------
+
+			cd1 = codigoDetalleRepo.saveAndFlush(cd1);
+			cd2 = codigoDetalleRepo.saveAndFlush(cd2);
+
+			// detalleRecibo 1
+			DetalleRecibo dr1 = new DetalleRecibo();
+			dr1.setCodigoDetalle(cd1);
+			dr1.setHaber(1500.00);
+			dr1.setDeduccion(null);
+			dr1.setPorcentaje(10.5);
+
+			// Sucursal 1
+			Sucursal s1 = new Sucursal();
+			s1.setCiudad("Lucas Gonzalez");
+			s1.setCuitEmpresa("30-289615936");
+			s1.setDireccion("Hernandez 321");
+			
+			// Sucursal 2
+			Sucursal s2 = new Sucursal();
+			s2.setCiudad("Nogoya");
+			s2.setCuitEmpresa("30-289615936");
+			s2.setDireccion("San Martin 331");
+
+			sucursalRepo.saveAndFlush(s1);
+			sucursalRepo.saveAndFlush(s2);
+			
+			
+			//Empleados
+			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(1);
+			assertTrue(optEmpleado1.isPresent());
+			
+			Optional<Empleado> optEmpleado2 = empleadoRepo.findById(2);
+			assertTrue(optEmpleado2.isPresent());
+
+			// DATO BANCARIO 1
+			DatoBancario datoBancario1 = new DatoBancario();
+			datoBancario1.setNombreBanco("Banco Entre Rios");
+			datoBancario1.setNumeroCuenta("256335889956215823");
+			datoBancario1.setEmpleado(optEmpleado1.get());
+
+			datoBancarioRepo.saveAndFlush(datoBancario1);
+			
+			// DATO BANCARIO 2
+			DatoBancario datoBancario2 = new DatoBancario();
+			datoBancario2.setNombreBanco("Banco Santader");
+			datoBancario2.setNumeroCuenta("25435567889903");
+			datoBancario2.setEmpleado(optEmpleado2.get());
+			
+			datoBancarioRepo.saveAndFlush(datoBancario2);
+
+			
+			ReciboSueldo rs = new ReciboSueldo();
+			rs.setTotalBruto(1500.0);
+			rs.setTotalNeto(130.0);
+			rs.setLugarDePago("ACA SE PAGA");
+			rs.setSucursal(s1);
+			rs.setPagado(true);
+			rs.setFechaEmision(Date.valueOf("2021-07-21"));
+			rs.setFechaDePago(Date.valueOf("2021-07-15"));
+			rs.setDeducciones(15000.1);
+			rs.setNumeroRecibo(70);
+			rs.setEmpleado(optEmpleado1.get());
+
+			rs.addDetalleRecibo(dr1);
+
+			// Chequeamos que el retorno sea el correcto
+
+			detalleReciboRepo.saveAndFlush(dr1);
+
+			// Guardamos el recibo de sueldo
+
+			Optional<ReciboSueldo> reciboOptOld = reciboSueldoService.guardarReciboSueldo(rs);
+
+			assertTrue(reciboOptOld.isPresent());
+
+			// Nuevos campos:
+			Double nuevoTotalBruto=0.0;
+			Double nuevoTotalNeto=130.0;
+			String nuevoLugarDePago="Se cobra aca";
+			Boolean nuevoPagado = false;
+			Date nuevoFechaEmision=Date.valueOf("2021-06-08");
+			Date nuevoFechaDePago=Date.valueOf("2021-06-17");
+			Double nuevoDeducciones=8000.0;
+			int nuevoNumeroRecibo = 80;
+	
+			
+			rs.setEmpleado(optEmpleado2.get());
+			rs.setSucursal(s2);
+			
+			// ----Actualizamos
+			Optional<ReciboSueldo> optDr1New = reciboSueldoService.actualizarReciboSueldo(rs);
+
+			// ----Comprobamos actualizacion en el retorno
+			assertTrue(optDr1New.isPresent());
+			assertEquals(nuevoTotalBruto,optDr1New.get().getTotalBruto());
+			assertEquals(nuevoTotalNeto,optDr1New.get().getTotalNeto());
+			assertEquals(nuevoLugarDePago,optDr1New.get().getLugarDePago());
+			assertEquals(nuevoPagado,optDr1New.get().getPagado());
+			assertEquals(nuevoFechaEmision,optDr1New.get().getFechaEmision());
+			assertEquals(nuevoFechaDePago,optDr1New.get().getFechaDePago());
+			assertEquals(nuevoDeducciones,optDr1New.get().getDeducciones());
+			assertEquals(nuevoNumeroRecibo,optDr1New.get().getNumeroRecibo());
+			assertEquals(optEmpleado2.get().getId(),optDr1New.get().getEmpleado().getId());
+			assertEquals(s2.getId(),optDr1New.get().getSucursal().getId());
+			
+			// Comprabamos actualizacion en el repositorio
+			Optional<ReciboSueldo> optRepoR1 = reciboRepo.findById(optDr1New.get().getId());
+			assertTrue(optRepoR1.isPresent());
+			
+
+		}
+
 	}
 
 }
