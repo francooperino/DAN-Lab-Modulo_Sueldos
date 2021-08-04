@@ -531,11 +531,6 @@ class ReciboSueldoServiceImpTest {
 		}
 	}
 
-	
-		
-	
-	
-	
 	@Nested
 	@DisplayName("Tests recibo")
 	class reciboTest {
@@ -621,7 +616,7 @@ class ReciboSueldoServiceImpTest {
 			rs.addDetalleRecibo(dr2);
 			rs.addDetalleRecibo(dr3);
 
-			// Chequeamos que el retorno sea el correcto
+			// guardamos los detalle recibo
 
 			detalleReciboRepo.saveAndFlush(dr1);
 			detalleReciboRepo.saveAndFlush(dr2);
@@ -638,6 +633,7 @@ class ReciboSueldoServiceImpTest {
 		@Sql("/insert-data-testing2.sql")
 		@Test
 		void actualizarReciboSueldo() {
+
 			// codigoDetalle 1
 			CodigoDetalle cd1 = new CodigoDetalle();
 			cd1.setCodigoDetalle(100);
@@ -665,7 +661,7 @@ class ReciboSueldoServiceImpTest {
 			s1.setCiudad("Lucas Gonzalez");
 			s1.setCuitEmpresa("30-289615936");
 			s1.setDireccion("Hernandez 321");
-			
+
 			// Sucursal 2
 			Sucursal s2 = new Sucursal();
 			s2.setCiudad("Nogoya");
@@ -674,12 +670,11 @@ class ReciboSueldoServiceImpTest {
 
 			sucursalRepo.saveAndFlush(s1);
 			sucursalRepo.saveAndFlush(s2);
-			
-			
-			//Empleados
+
+			// Empleados
 			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(4);
 			assertTrue(optEmpleado1.isPresent());
-			
+
 			Optional<Empleado> optEmpleado2 = empleadoRepo.findById(5);
 			assertTrue(optEmpleado2.isPresent());
 
@@ -690,16 +685,15 @@ class ReciboSueldoServiceImpTest {
 			datoBancario1.setEmpleado(optEmpleado1.get());
 
 			datoBancarioRepo.saveAndFlush(datoBancario1);
-			
+
 			// DATO BANCARIO 2
 			DatoBancario datoBancario2 = new DatoBancario();
 			datoBancario2.setNombreBanco("Banco Santader");
 			datoBancario2.setNumeroCuenta("25435567889903");
 			datoBancario2.setEmpleado(optEmpleado2.get());
-			
+
 			datoBancarioRepo.saveAndFlush(datoBancario2);
 
-			
 			ReciboSueldo rs = new ReciboSueldo();
 			rs.setTotalBruto(1500.0);
 			rs.setTotalNeto(130.0);
@@ -725,15 +719,15 @@ class ReciboSueldoServiceImpTest {
 			assertTrue(reciboOptOld.isPresent());
 
 			// Nuevos campos:
-			Double nuevoTotalBruto=0.0;
-			Double nuevoTotalNeto=140.0;
-			String nuevoLugarDePago="Se cobra aca";
+			Double nuevoTotalBruto = 0.0;
+			Double nuevoTotalNeto = 140.0;
+			String nuevoLugarDePago = "Se cobra aca";
 			Boolean nuevoPagado = false;
-			Date nuevoFechaEmision=Date.valueOf("2021-06-08");
-			Date nuevoFechaDePago=Date.valueOf("2021-06-17");
-			Double nuevoDeducciones=8000.0;
+			Date nuevoFechaEmision = Date.valueOf("2021-06-08");
+			Date nuevoFechaDePago = Date.valueOf("2021-06-17");
+			Double nuevoDeducciones = 8000.0;
 			int nuevoNumeroRecibo = 80;
-	
+
 			rs.setTotalBruto(nuevoTotalBruto);
 			rs.setTotalNeto(nuevoTotalNeto);
 			rs.setLugarDePago(nuevoLugarDePago);
@@ -744,39 +738,361 @@ class ReciboSueldoServiceImpTest {
 			rs.setNumeroRecibo(nuevoNumeroRecibo);
 			rs.setEmpleado(optEmpleado2.get());
 			rs.setSucursal(s2);
-			
+
 			// ----Actualizamos
 			Optional<ReciboSueldo> optDr1New = reciboSueldoService.actualizarReciboSueldo(rs);
 
 			// ----Comprobamos actualizacion en el retorno
 			assertTrue(optDr1New.isPresent());
-			assertEquals(nuevoTotalBruto,optDr1New.get().getTotalBruto());
-			assertEquals(nuevoTotalNeto,optDr1New.get().getTotalNeto());
-			assertEquals(nuevoLugarDePago,optDr1New.get().getLugarDePago());
-			assertEquals(nuevoPagado,optDr1New.get().getPagado());
-			assertEquals(nuevoFechaEmision,optDr1New.get().getFechaEmision());
-			assertEquals(nuevoFechaDePago,optDr1New.get().getFechaDePago());
-			assertEquals(nuevoDeducciones,optDr1New.get().getDeducciones());
-			assertEquals(nuevoNumeroRecibo,optDr1New.get().getNumeroRecibo());
-			assertEquals(optEmpleado2.get().getId(),optDr1New.get().getEmpleado().getId());
-			assertEquals(s2.getId(),optDr1New.get().getSucursal().getId());
-			
+			assertEquals(nuevoTotalBruto, optDr1New.get().getTotalBruto());
+			assertEquals(nuevoTotalNeto, optDr1New.get().getTotalNeto());
+			assertEquals(nuevoLugarDePago, optDr1New.get().getLugarDePago());
+			assertEquals(nuevoPagado, optDr1New.get().getPagado());
+			assertEquals(nuevoFechaEmision, optDr1New.get().getFechaEmision());
+			assertEquals(nuevoFechaDePago, optDr1New.get().getFechaDePago());
+			assertEquals(nuevoDeducciones, optDr1New.get().getDeducciones());
+			assertEquals(nuevoNumeroRecibo, optDr1New.get().getNumeroRecibo());
+			assertEquals(optEmpleado2.get().getId(), optDr1New.get().getEmpleado().getId());
+			assertEquals(s2.getId(), optDr1New.get().getSucursal().getId());
+
 			// Comprabamos actualizacion en el repositorio
 			Optional<ReciboSueldo> optRepoR1 = reciboRepo.findById(optDr1New.get().getId());
 			assertTrue(optRepoR1.isPresent());
-			assertEquals(nuevoTotalBruto,optRepoR1.get().getTotalBruto());
-			assertEquals(nuevoTotalNeto,optRepoR1.get().getTotalNeto());
-			assertEquals(nuevoLugarDePago,optRepoR1.get().getLugarDePago());
-			assertEquals(nuevoPagado,optRepoR1.get().getPagado());
-			assertEquals(nuevoFechaEmision,optRepoR1.get().getFechaEmision());
-			assertEquals(nuevoFechaDePago,optRepoR1.get().getFechaDePago());
-			assertEquals(nuevoDeducciones,optRepoR1.get().getDeducciones());
-			assertEquals(nuevoNumeroRecibo,optRepoR1.get().getNumeroRecibo());
-			assertEquals(optEmpleado2.get().getId(),optRepoR1.get().getEmpleado().getId());
-			assertEquals(s2.getId(),optRepoR1.get().getSucursal().getId());
+			assertEquals(nuevoTotalBruto, optRepoR1.get().getTotalBruto());
+			assertEquals(nuevoTotalNeto, optRepoR1.get().getTotalNeto());
+			assertEquals(nuevoLugarDePago, optRepoR1.get().getLugarDePago());
+			assertEquals(nuevoPagado, optRepoR1.get().getPagado());
+			assertEquals(nuevoFechaEmision, optRepoR1.get().getFechaEmision());
+			assertEquals(nuevoFechaDePago, optRepoR1.get().getFechaDePago());
+			assertEquals(nuevoDeducciones, optRepoR1.get().getDeducciones());
+			assertEquals(nuevoNumeroRecibo, optRepoR1.get().getNumeroRecibo());
+			assertEquals(optEmpleado2.get().getId(), optRepoR1.get().getEmpleado().getId());
+			assertEquals(s2.getId(), optRepoR1.get().getSucursal().getId());
 
 		}
 
+		@Sql("/insert-data-testing3.sql")
+		@Test
+		// Test para DetalleRecibo
+		void getReciboSueldo() {
+			// codigoDetalle 1
+			CodigoDetalle cd1 = new CodigoDetalle();
+			cd1.setCodigoDetalle(100);
+			cd1.setDescripcion("La primer descripcion");
+
+			// codigoDetalle 2
+			CodigoDetalle cd2 = new CodigoDetalle();
+			cd2.setCodigoDetalle(200);
+			cd2.setDescripcion("La segunda descripcion");
+
+			// codigoDetalle 3
+			CodigoDetalle cd3 = new CodigoDetalle();
+			cd3.setCodigoDetalle(300);
+			cd3.setDescripcion("La tercer descripcion");
+
+			// ---------------------------------------------------
+
+			cd1 = codigoDetalleRepo.saveAndFlush(cd1);
+			cd2 = codigoDetalleRepo.saveAndFlush(cd2);
+			cd3 = codigoDetalleRepo.saveAndFlush(cd3);
+
+			// detalleRecibo 1
+			DetalleRecibo dr1 = new DetalleRecibo();
+			dr1.setCodigoDetalle(cd1);
+			dr1.setHaber(1500.00);
+			dr1.setDeduccion(null);
+			dr1.setPorcentaje(10.5);
+
+			// detalleRecibo 2
+			DetalleRecibo dr2 = new DetalleRecibo();
+			dr2.setCodigoDetalle(cd2);
+			dr2.setHaber(null);
+			dr2.setDeduccion(300.0);
+			dr2.setPorcentaje(15.0);
+
+			// detalleRecibo 3
+			DetalleRecibo dr3 = new DetalleRecibo();
+			dr3.setCodigoDetalle(cd3);
+			dr3.setHaber(400.0);
+			dr3.setDeduccion(null);
+			dr3.setPorcentaje(40.0);
+
+			// Sucursal 1
+			Sucursal s1 = new Sucursal();
+			s1.setCiudad("Lucas Gonzalez");
+			s1.setCuitEmpresa("30-289615936");
+			s1.setDireccion("Hernandez 321");
+
+			sucursalRepo.saveAndFlush(s1);
+
+			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(7);
+			assertTrue(optEmpleado1.isPresent());
+
+			// DATO BANCARIO 1
+			DatoBancario datoBancario1 = new DatoBancario();
+			datoBancario1.setNombreBanco("Banco Entre Rios");
+			datoBancario1.setNumeroCuenta("256335889956215823");
+			datoBancario1.setEmpleado(optEmpleado1.get());
+
+			datoBancarioRepo.saveAndFlush(datoBancario1);
+
+			ReciboSueldo rs = new ReciboSueldo();
+			rs.setTotalBruto(1500.0);
+			rs.setTotalNeto(130.0);
+			rs.setLugarDePago("ACA SE PAGA");
+			rs.setSucursal(s1);
+			rs.setPagado(true);
+			rs.setFechaEmision(Date.valueOf("2021-07-21"));
+			rs.setFechaDePago(Date.valueOf("2021-07-15"));
+			rs.setDeducciones(15000.1);
+			rs.setNumeroRecibo(70);
+			rs.setEmpleado(optEmpleado1.get());
+
+			rs.addDetalleRecibo(dr1);
+			rs.addDetalleRecibo(dr2);
+			rs.addDetalleRecibo(dr3);
+
+			// Chequeamos que el retorno sea el correcto
+
+			detalleReciboRepo.saveAndFlush(dr1);
+			detalleReciboRepo.saveAndFlush(dr2);
+			detalleReciboRepo.saveAndFlush(dr3);
+
+			// Guardamos el recibo de sueldo
+
+			reciboRepo.saveAndFlush(rs);
+
+			// Obetenemos el recibo de sueldo
+			Optional<ReciboSueldo> optRepoRs1 = reciboSueldoService.getReciboSueldo(rs.getId());
+			assertTrue(optRepoRs1.isPresent());
+
+		}
+
+		@Sql("/insert-data-testing4.sql")
+		@Test
+		void getAllReciboSueldo() {
+			// codigoDetalle 1
+			CodigoDetalle cd1 = new CodigoDetalle();
+			cd1.setCodigoDetalle(100);
+			cd1.setDescripcion("La primer descripcion");
+
+			// codigoDetalle 2
+			CodigoDetalle cd2 = new CodigoDetalle();
+			cd2.setCodigoDetalle(200);
+			cd2.setDescripcion("La segunda descripcion");
+
+			// codigoDetalle 3
+			CodigoDetalle cd3 = new CodigoDetalle();
+			cd3.setCodigoDetalle(300);
+			cd3.setDescripcion("La tercer descripcion");
+
+			// ---------------------------------------------------
+
+			cd1 = codigoDetalleRepo.saveAndFlush(cd1);
+			cd2 = codigoDetalleRepo.saveAndFlush(cd2);
+			cd3 = codigoDetalleRepo.saveAndFlush(cd3);
+
+			// detalleRecibo 1
+			DetalleRecibo dr1 = new DetalleRecibo();
+			dr1.setCodigoDetalle(cd1);
+			dr1.setHaber(1500.00);
+			dr1.setDeduccion(null);
+			dr1.setPorcentaje(10.5);
+
+			// detalleRecibo 2
+			DetalleRecibo dr2 = new DetalleRecibo();
+			dr2.setCodigoDetalle(cd2);
+			dr2.setHaber(null);
+			dr2.setDeduccion(300.0);
+			dr2.setPorcentaje(15.0);
+
+			// detalleRecibo 3
+			DetalleRecibo dr3 = new DetalleRecibo();
+			dr3.setCodigoDetalle(cd3);
+			dr3.setHaber(400.0);
+			dr3.setDeduccion(null);
+			dr3.setPorcentaje(40.0);
+
+			// Sucursal 1
+			Sucursal s1 = new Sucursal();
+			s1.setCiudad("Lucas Gonzalez");
+			s1.setCuitEmpresa("30-289615936");
+			s1.setDireccion("Hernandez 321");
+
+			sucursalRepo.saveAndFlush(s1);
+
+			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(10);
+			assertTrue(optEmpleado1.isPresent());
+
+			// DATO BANCARIO 1
+			DatoBancario datoBancario1 = new DatoBancario();
+			datoBancario1.setNombreBanco("Banco Entre Rios");
+			datoBancario1.setNumeroCuenta("256335889956215823");
+			datoBancario1.setEmpleado(optEmpleado1.get());
+
+			datoBancarioRepo.saveAndFlush(datoBancario1);
+
+			ReciboSueldo rs = new ReciboSueldo();
+			rs.setTotalBruto(1500.0);
+			rs.setTotalNeto(130.0);
+			rs.setLugarDePago("ACA SE PAGA");
+			rs.setSucursal(s1);
+			rs.setPagado(true);
+			rs.setFechaEmision(Date.valueOf("2021-07-21"));
+			rs.setFechaDePago(Date.valueOf("2021-07-15"));
+			rs.setDeducciones(15000.1);
+			rs.setNumeroRecibo(70);
+			rs.setEmpleado(optEmpleado1.get());
+			rs.addDetalleRecibo(dr1);
+			rs.addDetalleRecibo(dr2);
+
+			ReciboSueldo rs2 = new ReciboSueldo();
+			rs2.setTotalBruto(150.0);
+			rs2.setTotalNeto(100.0);
+			rs2.setLugarDePago("Lugar de pago2");
+			rs2.setSucursal(s1);
+			rs2.setPagado(false);
+			rs2.setFechaEmision(Date.valueOf("2020-07-21"));
+			rs2.setFechaDePago(Date.valueOf("2020-07-15"));
+			rs2.setDeducciones(3000.1);
+			rs2.setNumeroRecibo(85);
+			rs2.setEmpleado(optEmpleado1.get());
+
+			rs2.addDetalleRecibo(dr3);
+
+			// Chequeamos que el retorno sea el correcto
+
+			detalleReciboRepo.saveAndFlush(dr1);
+			detalleReciboRepo.saveAndFlush(dr2);
+			detalleReciboRepo.saveAndFlush(dr3);
+
+			reciboRepo.saveAndFlush(rs);
+			reciboRepo.saveAndFlush(rs2);
+
+			// Obetenemos los recibo de sueldo
+			List<ReciboSueldo> listaRecibo = reciboSueldoService.getAllReciboSueldo();
+			assertEquals(2, listaRecibo.size());
+		}
+
+		@Sql("/insert-data-testing5.sql")
+		@Test
+		// Test para Recibo
+		void borrarRecibo() {
+
+			// codigoDetalle 1
+			CodigoDetalle cd1 = new CodigoDetalle();
+			cd1.setCodigoDetalle(100);
+			cd1.setDescripcion("La primer descripcion");
+
+			// codigoDetalle 2
+			CodigoDetalle cd2 = new CodigoDetalle();
+			cd2.setCodigoDetalle(200);
+			cd2.setDescripcion("La segunda descripcion");
+
+			// codigoDetalle 3
+			CodigoDetalle cd3 = new CodigoDetalle();
+			cd3.setCodigoDetalle(300);
+			cd3.setDescripcion("La tercer descripcion");
+
+			// ---------------------------------------------------
+
+			cd1 = codigoDetalleRepo.saveAndFlush(cd1);
+			cd2 = codigoDetalleRepo.saveAndFlush(cd2);
+			cd3 = codigoDetalleRepo.saveAndFlush(cd3);
+
+			// detalleRecibo 1
+			DetalleRecibo dr1 = new DetalleRecibo();
+			dr1.setCodigoDetalle(cd1);
+			dr1.setHaber(1500.00);
+			dr1.setDeduccion(null);
+			dr1.setPorcentaje(10.5);
+
+			// detalleRecibo 2
+			DetalleRecibo dr2 = new DetalleRecibo();
+			dr2.setCodigoDetalle(cd2);
+			dr2.setHaber(null);
+			dr2.setDeduccion(300.0);
+			dr2.setPorcentaje(15.0);
+
+			// detalleRecibo 3
+			DetalleRecibo dr3 = new DetalleRecibo();
+			dr3.setCodigoDetalle(cd3);
+			dr3.setHaber(400.0);
+			dr3.setDeduccion(null);
+			dr3.setPorcentaje(40.0);
+
+			// Sucursal 1
+			Sucursal s1 = new Sucursal();
+			s1.setCiudad("Lucas Gonzalez");
+			s1.setCuitEmpresa("30-289615936");
+			s1.setDireccion("Hernandez 321");
+
+			sucursalRepo.saveAndFlush(s1);
+
+			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(11);
+			assertTrue(optEmpleado1.isPresent());
+
+			// DATO BANCARIO 1
+			DatoBancario datoBancario1 = new DatoBancario();
+			datoBancario1.setNombreBanco("Banco Entre Rios");
+			datoBancario1.setNumeroCuenta("256335889956215823");
+			datoBancario1.setEmpleado(optEmpleado1.get());
+
+			datoBancarioRepo.saveAndFlush(datoBancario1);
+
+			ReciboSueldo rs = new ReciboSueldo();
+			rs.setTotalBruto(1500.0);
+			rs.setTotalNeto(130.0);
+			rs.setLugarDePago("ACA SE PAGA");
+			rs.setSucursal(s1);
+			rs.setPagado(true);
+			rs.setFechaEmision(Date.valueOf("2021-07-21"));
+			rs.setFechaDePago(Date.valueOf("2021-07-15"));
+			rs.setDeducciones(15000.1);
+			rs.setNumeroRecibo(70);
+			rs.setEmpleado(optEmpleado1.get());
+
+			rs.addDetalleRecibo(dr1);
+			rs.addDetalleRecibo(dr2);
+			rs.addDetalleRecibo(dr3);
+
+			// guardamos los detalle recibo
+
+			detalleReciboRepo.saveAndFlush(dr1);
+			detalleReciboRepo.saveAndFlush(dr2);
+			detalleReciboRepo.saveAndFlush(dr3);
+
+			// Guardamos el recibo de sueldo
+
+			reciboRepo.saveAndFlush(rs);
+
+			// Borramos el codigo detalle
+			Optional<ReciboSueldo> opRs1 = reciboSueldoService.borrarReciboSueldo(rs);
+			
+			assertTrue(opRs1.isPresent());
+			
+			assertTrue(reciboRepo.findById(opRs1.get().getId()).isEmpty());
+			
+			
+
+		}
+		
+		@Test
+		// Test para Recibo
+		void borrarReciboNoExistente() {
+
+			ReciboSueldo rs = new ReciboSueldo();
+			rs.setId(999999);
+
+			// Borramos el codigo detalle
+			Optional<ReciboSueldo> opRs1 = reciboSueldoService.borrarReciboSueldo(rs);
+			
+			assertTrue(opRs1.isEmpty());
+			
+			
+			
+
+		}
 	}
 
 }

@@ -1,0 +1,1 @@
+INSERT INTO EMPLEADO VALUES (10, 'cindyEntes@gmail.com');

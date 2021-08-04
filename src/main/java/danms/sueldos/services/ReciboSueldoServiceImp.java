@@ -204,7 +204,7 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 			Optional<DetalleRecibo> optDetalleRecibo = detalleReciboRepository.findById(idDetalleRecibo);
 			// Chequemos si lo encontro
 			if (optDetalleRecibo.isEmpty()) {
-				logger.debug("No se encontro el codigo detalle con id: " + idDetalleRecibo);
+				logger.debug("No se encontro el detalleRecibo con id: " + idDetalleRecibo);
 				return optDetalleRecibo;
 			}
 			logger.debug("Se encontro el codigo detalle con id: " + optDetalleRecibo);
@@ -359,22 +359,50 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 
 	@Override
 	public Optional<ReciboSueldo> getReciboSueldo(Integer idReciboSueldo) {
-		// TODO Auto-generated method stub
-		return null;
+		logger.info("Solicitud de obtencion de recibo de sueldo " + idReciboSueldo);
+		try {
+			Optional<ReciboSueldo> optReciboSueldo = reciboSueldoRepository.findById(idReciboSueldo);
+			// Chequemos si lo encontro
+			if (optReciboSueldo.isEmpty()) {
+				logger.debug("No se encontro el recibo de sueldo con id: " + idReciboSueldo);
+				return optReciboSueldo;
+			}
+			logger.debug("Se encontro el codigo detalle con id: " + optReciboSueldo);
+			return optReciboSueldo;
+
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			logger.error("El id recibido de recibo de sueldo es null");
+			return Optional.empty();
+		}
 	}
 
 	@Override
 	public List<ReciboSueldo> getAllReciboSueldo() {
-		// TODO Auto-generated method stub
-		return null;
+		return reciboSueldoRepository.findAll();
 	}
 
 	@Override
 	public Optional<ReciboSueldo> borrarReciboSueldo(ReciboSueldo reciboSueldo) {
-		// TODO Auto-generated method stub
-		return null;
+		logger.info("Solicitud de borrado del Recibo: " + reciboSueldo.toString());
+
+		try {
+			if (this.getReciboSueldo(reciboSueldo.getId()).isEmpty()) {
+				throw new IllegalArgumentException(
+						"No existe el recibo con id: " + reciboSueldo.getId() + " en la base de datos");
+			}
+			for (DetalleRecibo dt : reciboSueldo.getListaDetalleRecibo()){
+				if(dt.getId()!=null) {
+			   this.borrarDetalleRecibo(dt);
+				}
+			}
+			reciboSueldoRepository.deleteById(reciboSueldo.getId());
+			logger.debug("Se borro correctamente el recibo: " + reciboSueldo.toString());
+			return Optional.of(reciboSueldo);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			logger.error("El id recibido es null");
+			return Optional.empty();
+		}
 	}
-
-	// Metodos ReciboSueldo
-
 }
