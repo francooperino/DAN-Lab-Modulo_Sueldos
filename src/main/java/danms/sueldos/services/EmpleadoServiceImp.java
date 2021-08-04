@@ -63,6 +63,8 @@ public class EmpleadoServiceImp implements EmpleadoService {
 			logger.error("No existe el empleado asociado al dato bancario");
 			return Optional.empty();
 		}
+		//Asociamos el empleado buscado al dato bancario
+		datoBancario.setEmpleado(optEmpleadoBuscado.get());
 		try {
 			datoBancarioRepo.saveAndFlush(datoBancario);
 			logger.debug("Se guardo correctamente el dato bancario");
