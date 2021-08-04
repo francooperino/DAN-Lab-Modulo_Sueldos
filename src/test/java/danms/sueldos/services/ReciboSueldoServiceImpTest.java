@@ -531,11 +531,16 @@ class ReciboSueldoServiceImpTest {
 		}
 	}
 
+	
+		
+	
+	
+	
 	@Nested
 	@DisplayName("Tests recibo")
 	class reciboTest {
-		@Test
 		@Sql("/insert-data-testing1.sql")
+		@Test
 		// Test para Recibo de sueldo
 
 		void guardarReciboSueldo() {
@@ -630,8 +635,8 @@ class ReciboSueldoServiceImpTest {
 
 		}
 
+		@Sql("/insert-data-testing2.sql")
 		@Test
-		@Sql("/insert-data-testing1.sql")
 		void actualizarReciboSueldo() {
 			// codigoDetalle 1
 			CodigoDetalle cd1 = new CodigoDetalle();
@@ -672,10 +677,10 @@ class ReciboSueldoServiceImpTest {
 			
 			
 			//Empleados
-			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(1);
+			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(4);
 			assertTrue(optEmpleado1.isPresent());
 			
-			Optional<Empleado> optEmpleado2 = empleadoRepo.findById(2);
+			Optional<Empleado> optEmpleado2 = empleadoRepo.findById(5);
 			assertTrue(optEmpleado2.isPresent());
 
 			// DATO BANCARIO 1
@@ -721,7 +726,7 @@ class ReciboSueldoServiceImpTest {
 
 			// Nuevos campos:
 			Double nuevoTotalBruto=0.0;
-			Double nuevoTotalNeto=130.0;
+			Double nuevoTotalNeto=140.0;
 			String nuevoLugarDePago="Se cobra aca";
 			Boolean nuevoPagado = false;
 			Date nuevoFechaEmision=Date.valueOf("2021-06-08");
@@ -729,7 +734,14 @@ class ReciboSueldoServiceImpTest {
 			Double nuevoDeducciones=8000.0;
 			int nuevoNumeroRecibo = 80;
 	
-			
+			rs.setTotalBruto(nuevoTotalBruto);
+			rs.setTotalNeto(nuevoTotalNeto);
+			rs.setLugarDePago(nuevoLugarDePago);
+			rs.setPagado(nuevoPagado);
+			rs.setFechaEmision(nuevoFechaEmision);
+			rs.setFechaDePago(nuevoFechaDePago);
+			rs.setDeducciones(nuevoDeducciones);
+			rs.setNumeroRecibo(nuevoNumeroRecibo);
 			rs.setEmpleado(optEmpleado2.get());
 			rs.setSucursal(s2);
 			
@@ -752,7 +764,16 @@ class ReciboSueldoServiceImpTest {
 			// Comprabamos actualizacion en el repositorio
 			Optional<ReciboSueldo> optRepoR1 = reciboRepo.findById(optDr1New.get().getId());
 			assertTrue(optRepoR1.isPresent());
-			
+			assertEquals(nuevoTotalBruto,optRepoR1.get().getTotalBruto());
+			assertEquals(nuevoTotalNeto,optRepoR1.get().getTotalNeto());
+			assertEquals(nuevoLugarDePago,optRepoR1.get().getLugarDePago());
+			assertEquals(nuevoPagado,optRepoR1.get().getPagado());
+			assertEquals(nuevoFechaEmision,optRepoR1.get().getFechaEmision());
+			assertEquals(nuevoFechaDePago,optRepoR1.get().getFechaDePago());
+			assertEquals(nuevoDeducciones,optRepoR1.get().getDeducciones());
+			assertEquals(nuevoNumeroRecibo,optRepoR1.get().getNumeroRecibo());
+			assertEquals(optEmpleado2.get().getId(),optRepoR1.get().getEmpleado().getId());
+			assertEquals(s2.getId(),optRepoR1.get().getSucursal().getId());
 
 		}
 
