@@ -57,6 +57,12 @@ public class EmpleadoServiceImp implements EmpleadoService {
 	@Override
 	public Optional<DatoBancario> guardarDatoBancario(DatoBancario datoBancario) {
 		logger.info("Solicitud de guardado de datoBancario");
+		//Chequeamos que el empleado asociado al dato bancario exista en la DB.
+		Optional<Empleado> optEmpleadoBuscado = this.getEmpleado(datoBancario.getEmpleado().getId());
+		if(optEmpleadoBuscado.isEmpty()) {
+			logger.error("No existe el empleado asociado al dato bancario");
+			return Optional.empty();
+		}
 		try {
 			datoBancarioRepo.saveAndFlush(datoBancario);
 			logger.debug("Se guardo correctamente el dato bancario");
