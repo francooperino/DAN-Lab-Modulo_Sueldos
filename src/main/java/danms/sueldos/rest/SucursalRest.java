@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dan.tp2021.productos.domain.Producto;
 import danms.sueldos.domain.Sucursal;
 import danms.sueldos.services.interfaces.SucursalService;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +32,6 @@ public class SucursalRest {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Guardado correctamente"),
 			@ApiResponse(code = 400, message = "No se pudo guardar") })
 	public ResponseEntity<Sucursal> crearSucursal(@RequestBody Sucursal sucursalN) {
-		Sucursal s1 = new Sucursal();
 		return ResponseEntity.of(sucursalService.guardarSucursal(sucursalN));
 	}
 

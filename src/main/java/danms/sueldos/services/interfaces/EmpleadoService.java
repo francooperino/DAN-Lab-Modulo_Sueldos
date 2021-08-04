@@ -12,12 +12,14 @@ public interface EmpleadoService {
 	
 	public List<Empleado> getAllEmpleado();
 	
-	//
+	//--------Dato bancario
 	public Optional<DatoBancario> guardarDatoBancario(DatoBancario datoBancario);
 	
 	public Optional<DatoBancario> actualizarDatoBancario(DatoBancario datoBancario);
 	
 	public Optional<DatoBancario> getDatoBancario(Integer idDatoBancario);
+	
+	public List<DatoBancario> getDatoBancarioPorIdEmpleado(Integer idEmpleado);
 	
 	public List<DatoBancario> getAllDatoBancario();
 	
