@@ -40,15 +40,12 @@ public class SucursalRest {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "La sucursal se encontro"),
 			@ApiResponse(code = 405, message = "El id recibida es nula") })
 	public ResponseEntity<Sucursal> getSucursal(@PathVariable Integer id) {
-		if (id == null) {
-			return ResponseEntity.notFound().build();
-		}
 		return ResponseEntity.of(sucursalService.getSucursal(id));
 	}
 
 	@GetMapping
 	@ApiOperation(value = "Permite obtener todos las sucursales")
-	public ResponseEntity<List<Sucursal>> getProducto() {
+	public ResponseEntity<List<Sucursal>> getAllSucursal() {
 		return ResponseEntity.ok(sucursalService.getAllSucursal());
 	}
 
