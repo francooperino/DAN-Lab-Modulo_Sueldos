@@ -70,16 +70,16 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 	}
 
 	@Override
-	public Optional<CodigoDetalle> getCodigoDetalle(Integer CodigoDetalle) {
-		logger.info("Solicitud de obtencion del codigoDetalle " + CodigoDetalle);
+	public Optional<CodigoDetalle> getCodigoDetalle(Integer codigoDetalle) {
+		logger.info("Solicitud de obtencion del codigoDetalle " + codigoDetalle);
 		try {
-			Optional<CodigoDetalle> optCodigoDetalle = codigoDetalleRepository.findByCodigoDetalle(CodigoDetalle);
+			Optional<CodigoDetalle> optCodigoDetalle = codigoDetalleRepository.findByCodigoDetalle(codigoDetalle);
 			// Chequemos si lo encontro
 			if (optCodigoDetalle.isEmpty()) {
-				logger.debug("No se encontro el codigo detalle con codigo: " + CodigoDetalle);
+				logger.debug("No se encontro el codigo detalle con codigo: " + codigoDetalle);
 				return optCodigoDetalle;
 			}
-			logger.debug("Se encontro el codigo detalle con codigo: " + CodigoDetalle);
+			logger.debug("Se encontro el codigo detalle con codigo: " + codigoDetalle);
 			return optCodigoDetalle;
 
 		} catch (IllegalArgumentException e) {
