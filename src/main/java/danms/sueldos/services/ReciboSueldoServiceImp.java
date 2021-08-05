@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import danms.sueldos.domain.CodigoDetalle;
+import danms.sueldos.domain.DatoBancario;
 import danms.sueldos.domain.DetalleRecibo;
 import danms.sueldos.domain.Empleado;
 import danms.sueldos.domain.ReciboSueldo;
@@ -58,15 +59,29 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 
 	@Override
 	public Optional<CodigoDetalle> actualizarCodigoDetalle(CodigoDetalle codigoDetalle) {
-		logger.info("Solicitud de actualizacion codigoDetalle");
-		// Chequemos que ya exista
-		// TODO: rearmar este metodo para consultar si ademas existe en la bdd
-		if (codigoDetalle.getId() != null) {
-			logger.debug("El codigoDetalle existe");
-			return this.guardarCodigoDetalle(codigoDetalle);
+		logger.info("Solicitud de actualizacion de dato bancario");
+		try {
+			Optional<CodigoDetalle> optCodigoDetalleBuscado = codigoDetalleRepository.findById(codigoDetalle.getId());
+			if (optCodigoDetalleBuscado.isPresent()) {
+				// Existe en la DB
+				logger.debug("Existe el codigo detalle con codigo detalle: " + codigoDetalle.getCodigoDetalle()
+						+ "e id: " + codigoDetalle.getId());
+				codigoDetalle.setId(optCodigoDetalleBuscado.get().getId());
+				return this.guardarCodigoDetalle(codigoDetalle);
+			} 
+			else {
+				// No existe en la DB
+				logger.error("El codigo detalle con codigo detalle: " + codigoDetalle.getCodigoDetalle()
+						+ " no existe en la DB");
+				throw new IllegalArgumentException("El codigo detalle con codigo detalle: "
+						+ codigoDetalle.getCodigoDetalle() + " no existe en la DB");
+			}
+
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			logger.error("El codigo detalle no pudo ser actualizado");
+			return Optional.empty();
 		}
-		logger.debug("El codigo detalle no existe, debe estar creado para poder ser actualizado");
-		return Optional.empty();
 	}
 
 	@Override
@@ -146,7 +161,7 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 
 	@Override
 	public List<DetalleRecibo> guardarListaDetalleRecibo(List<DetalleRecibo> listaDetalleRecibo) {
-		
+
 		return detalleReciboRepository.saveAllAndFlush(listaDetalleRecibo);
 	}
 
@@ -261,7 +276,7 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 						reciboSueldo.setEmpleado(optEmpleado.get());
 						reciboSueldo.setSucursal(optSucursal.get());
 						reciboSueldo.setListaDetalleRecibo(listDetRec);
-						
+
 						reciboSueldoRepository.saveAndFlush(reciboSueldo);
 						logger.debug("Se guardo correctamente el recibo de sueldo: " + reciboSueldo.toString());
 						return Optional.of(reciboSueldo);
@@ -278,9 +293,8 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 				}
 			} else {
 				logger.debug("Fallo al guardar el recibo de sueldo " + reciboSueldo.toString());
-				throw new IllegalArgumentException(
-						"No se pudieron guardar los detalles recibo " + reciboSueldo.getListaDetalleRecibo().toString() + " en la base de datos");
-
+				throw new IllegalArgumentException("No se pudieron guardar los detalles recibo "
+						+ reciboSueldo.getListaDetalleRecibo().toString() + " en la base de datos");
 
 			}
 		} catch (Exception e) {
@@ -293,7 +307,7 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 
 	@Override
 	public Optional<ReciboSueldo> actualizarReciboSueldo(ReciboSueldo reciboSueldo) {
-		
+
 		logger.info("Solicitud de actualizacion recibo de sueldo");
 		logger.info("Verificamos si existe el recibo de sueldo: " + reciboSueldo.toString());
 
@@ -301,49 +315,43 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 		// lanzamos excepcion
 		Optional<ReciboSueldo> optRecibo = reciboSueldoRepository.findById(reciboSueldo.getId());
 		try {
-		if(reciboSueldo.getId()!=null) {	
-			if (optRecibo.isPresent()) {
-				//Que exista empleado
-				if(empleadoService.getEmpleado(reciboSueldo.getEmpleado().getId()).isPresent()) {
-					//Que exista sucursal
-					if(sucursalService.getSucursal(reciboSueldo.getSucursal().getId()).isPresent()) {
-					
-						//Setear todo y actualizar
-						reciboSueldo.setListaDetalleRecibo(optRecibo.get().getListaDetalleRecibo());
-						reciboSueldoRepository.saveAndFlush(reciboSueldo);
-						return this.guardarReciboSueldo(reciboSueldo);
-						
-					}else {
-						//No existe la nueva sucursal
-						logger.debug("la sucursal a usar en el recibo no existe en la bdd");
-						throw new IllegalArgumentException("No existe la sucursal : "
-								+ reciboSueldo.getSucursal().toString() + " en la base de datos");
+			if (reciboSueldo.getId() != null) {
+				if (optRecibo.isPresent()) {
+					// Que exista empleado
+					if (empleadoService.getEmpleado(reciboSueldo.getEmpleado().getId()).isPresent()) {
+						// Que exista sucursal
+						if (sucursalService.getSucursal(reciboSueldo.getSucursal().getId()).isPresent()) {
+
+							// Setear todo y actualizar
+							reciboSueldo.setListaDetalleRecibo(optRecibo.get().getListaDetalleRecibo());
+							reciboSueldoRepository.saveAndFlush(reciboSueldo);
+							return this.guardarReciboSueldo(reciboSueldo);
+
+						} else {
+							// No existe la nueva sucursal
+							logger.debug("la sucursal a usar en el recibo no existe en la bdd");
+							throw new IllegalArgumentException("No existe la sucursal : "
+									+ reciboSueldo.getSucursal().toString() + " en la base de datos");
+						}
+
+					} else {
+						// No existe el nuevo empleado
+						logger.debug("El empleado a usar en el recibo no existe en la bdd");
+						throw new IllegalArgumentException("No existe el empleado: "
+								+ reciboSueldo.getEmpleado().toString() + " en la base de datos");
 					}
-					
-					
-				}else {
-					//No existe el nuevo empleado
-					logger.debug("El empleado a usar en el recibo no existe en la bdd");
-					throw new IllegalArgumentException("No existe el empleado: "
-							+ reciboSueldo.getEmpleado().toString() + " en la base de datos");
+
+				} else {
+					logger.debug("El Recibo a actualizar no existe en la base de datos");
+					throw new IllegalArgumentException(
+							"No existe el recibo: " + reciboSueldo.toString() + " en la base de datos");
 				}
-				
-				
-				
-				
 			} else {
-				logger.debug("El Recibo a actualizar no existe en la base de datos");
-				throw new IllegalArgumentException("No existe el recibo: "
-						+ reciboSueldo.toString() + " en la base de datos");
+				// Recibo ID es null
+				logger.debug("El Recibo tiene id NULL");
+				throw new Exception("El id Recibo es NULL: " + reciboSueldo.toString());
+
 			}
-		}
-		else {
-			// Recibo ID es null
-			logger.debug("El Recibo tiene id NULL");
-			throw new Exception("El id Recibo es NULL: " + reciboSueldo.toString());
-			
-		}
-		
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -351,10 +359,6 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 			return Optional.empty();
 		}
 
-		
-		
-		
-		
 	}
 
 	@Override
@@ -391,9 +395,9 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 				throw new IllegalArgumentException(
 						"No existe el recibo con id: " + reciboSueldo.getId() + " en la base de datos");
 			}
-			for (DetalleRecibo dt : reciboSueldo.getListaDetalleRecibo()){
-				if(dt.getId()!=null) {
-			   this.borrarDetalleRecibo(dt);
+			for (DetalleRecibo dt : reciboSueldo.getListaDetalleRecibo()) {
+				if (dt.getId() != null) {
+					this.borrarDetalleRecibo(dt);
 				}
 			}
 			reciboSueldoRepository.deleteById(reciboSueldo.getId());
