@@ -74,16 +74,16 @@ public class ReciboSueldoRest {
 		}
 	}
 	
-	@PutMapping(path = "/codigodetalle/{idCodigoDetalle}")
+	@PutMapping(path = "/codigodetalle/{id}")
 	@ApiOperation(value = "Permite actualizar un codigo detalle. El id del codigo detalle debe estar en el path")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Actualizado correctamente"),
 			@ApiResponse(code = 400, message = "No se pudo actualizar") })
-	public ResponseEntity<CodigoDetalle> actualizarCodigoDetalle(@RequestBody CodigoDetalle codigoDetalle, @PathVariable Integer idCodigoDetalle) {
+	public ResponseEntity<CodigoDetalle> actualizarCodigoDetalle(@RequestBody CodigoDetalle codigoDetalle, @PathVariable Integer id) {
 		// Chequeamos que la sucursal exista
 		Optional<CodigoDetalle> optCodigoDetalleAActualizar = this.reciboSueldoService.getCodigoDetalle(codigoDetalle.getCodigoDetalle());
 		if (optCodigoDetalleAActualizar.isPresent()) {
 			//La sucursal existe
-			codigoDetalle.setId(idCodigoDetalle);
+			codigoDetalle.setId(id);
 			return ResponseEntity.of(reciboSueldoService.actualizarCodigoDetalle(codigoDetalle));
 		} 
 		else {
