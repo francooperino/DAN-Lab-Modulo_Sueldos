@@ -57,6 +57,14 @@ public class EmpleadoServiceImp implements EmpleadoService {
 	@Override
 	public Optional<DatoBancario> guardarDatoBancario(DatoBancario datoBancario) {
 		logger.info("Solicitud de guardado de datoBancario");
+		//Chequeamos que el empleado asociado al dato bancario exista en la DB.
+		Optional<Empleado> optEmpleadoBuscado = this.getEmpleado(datoBancario.getEmpleado().getId());
+		if(optEmpleadoBuscado.isEmpty()) {
+			logger.error("No existe el empleado asociado al dato bancario");
+			return Optional.empty();
+		}
+		//Asociamos el empleado buscado al dato bancario
+		datoBancario.setEmpleado(optEmpleadoBuscado.get());
 		try {
 			datoBancarioRepo.saveAndFlush(datoBancario);
 			logger.debug("Se guardo correctamente el dato bancario");
@@ -148,6 +156,34 @@ public class EmpleadoServiceImp implements EmpleadoService {
 
 		}
 
+	}
+
+	@Override
+	public List<DatoBancario> getDatoBancarioPorIdEmpleado(Integer idEmpleado) {
+		logger.info("Solicitud de obtenciion del dato bancario con el id empleado:: " + idEmpleado);
+		try {
+			//Buscamos el empleado
+			Optional<Empleado> optEmpleadoBuscado = this.getEmpleado(idEmpleado);
+			if(optEmpleadoBuscado.isEmpty()) {
+				throw new Exception("No se encontro el empleado con la id: " +idEmpleado+ " en la DB");
+			}
+			List<DatoBancario> listaDatoBancario = datoBancarioRepo.findByEmpleado(optEmpleadoBuscado.get());		
+			// Chequemos si encontro datos bancarios
+			if (listaDatoBancario == null) {
+				throw new Exception("No se encontron datos bancarios para el empleado con id: " + idEmpleado+ " en la DB");
+			}
+			logger.debug("Se encontro datos bancarios para el empleado con id: "+ idEmpleado+" ("+listaDatoBancario.size()+" datos bancarios)");
+			return listaDatoBancario;
+
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			logger.error("El empleado recibido es null");
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("No se encontro el empleado con la id: " +idEmpleado+ " en la DB");
+			return null;
+		}
 	}
 
 	
