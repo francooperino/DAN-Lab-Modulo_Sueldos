@@ -37,9 +37,6 @@ public class EmpleadoRest {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "El empleado se encontro"),
 			@ApiResponse(code = 405, message = "El id recibida es nula") })
 	public ResponseEntity<Empleado> getEmpleado(@PathVariable Integer id) {
-		if (id == null) {
-			return ResponseEntity.badRequest().build();
-		}
 		return ResponseEntity.of(empleadoService.getEmpleado(id));
 	}
 
