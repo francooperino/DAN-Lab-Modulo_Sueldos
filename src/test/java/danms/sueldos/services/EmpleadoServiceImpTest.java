@@ -29,13 +29,6 @@ import danms.sueldos.services.dao.EmpleadoRepository;
 import danms.sueldos.services.interfaces.EmpleadoService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-/*
- * Permite pedir a JUnit que cree solo una instancia de la clase de prueba y la
- * reutilice entre pruebas.
- */
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-//
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class) //Sirve para habilitar orden en la ejecucion de los metods
 @ActiveProfiles("testing")
 class EmpleadoServiceImpTest {
 
@@ -54,22 +47,7 @@ class EmpleadoServiceImpTest {
 	String puerto;
 
 	
-	@BeforeAll
-	void limpiarRepositoriosInicial() {
-		logger.info("El puerto en donde ejecuta es: " + puerto);
-		logger.info("!!Borrado del repository empleados!!");
-		empleadoRepo.deleteAll();
-	}
-
-	@AfterAll
-	void limpiarRepositoriosFinal() {
-		logger.info("!!Borrado del repository empleados!!");
-		empleadoRepo.deleteAll();
-	}
-
 	@Test
-	@Order(1) //Al ejecutar primero siempre carga el sql.
-	@Sql("/insert-data-testing1.sql")
 	void getEmpleado() {
 		logger.info("Inicio test: getEmpleado");
 		// Obetenemos la sucursal

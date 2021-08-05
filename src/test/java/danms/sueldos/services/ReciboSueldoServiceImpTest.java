@@ -534,10 +534,9 @@ class ReciboSueldoServiceImpTest {
 	@Nested
 	@DisplayName("Tests recibo")
 	class reciboTest {
-		@Sql("/insert-data-testing1.sql")
+		
 		@Test
 		// Test para Recibo de sueldo
-
 		void guardarReciboSueldo() {
 			// codigoDetalle 1
 			CodigoDetalle cd1 = new CodigoDetalle();
@@ -630,7 +629,6 @@ class ReciboSueldoServiceImpTest {
 
 		}
 
-		@Sql("/insert-data-testing2.sql")
 		@Test
 		void actualizarReciboSueldo() {
 
@@ -672,10 +670,10 @@ class ReciboSueldoServiceImpTest {
 			sucursalRepo.saveAndFlush(s2);
 
 			// Empleados
-			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(4);
+			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(1);
 			assertTrue(optEmpleado1.isPresent());
 
-			Optional<Empleado> optEmpleado2 = empleadoRepo.findById(5);
+			Optional<Empleado> optEmpleado2 = empleadoRepo.findById(2);
 			assertTrue(optEmpleado2.isPresent());
 
 			// DATO BANCARIO 1
@@ -771,7 +769,6 @@ class ReciboSueldoServiceImpTest {
 
 		}
 
-		@Sql("/insert-data-testing3.sql")
 		@Test
 		// Test para DetalleRecibo
 		void getReciboSueldo() {
@@ -825,7 +822,7 @@ class ReciboSueldoServiceImpTest {
 
 			sucursalRepo.saveAndFlush(s1);
 
-			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(7);
+			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(1);
 			assertTrue(optEmpleado1.isPresent());
 
 			// DATO BANCARIO 1
@@ -868,7 +865,6 @@ class ReciboSueldoServiceImpTest {
 
 		}
 
-		@Sql("/insert-data-testing4.sql")
 		@Test
 		void getAllReciboSueldo() {
 			// codigoDetalle 1
@@ -921,7 +917,7 @@ class ReciboSueldoServiceImpTest {
 
 			sucursalRepo.saveAndFlush(s1);
 
-			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(10);
+			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(2);
 			assertTrue(optEmpleado1.isPresent());
 
 			// DATO BANCARIO 1
@@ -974,7 +970,6 @@ class ReciboSueldoServiceImpTest {
 			assertEquals(2, listaRecibo.size());
 		}
 
-		@Sql("/insert-data-testing5.sql")
 		@Test
 		// Test para Recibo
 		void borrarRecibo() {
@@ -1029,7 +1024,7 @@ class ReciboSueldoServiceImpTest {
 
 			sucursalRepo.saveAndFlush(s1);
 
-			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(11);
+			Optional<Empleado> optEmpleado1 = empleadoRepo.findById(3);
 			assertTrue(optEmpleado1.isPresent());
 
 			// DATO BANCARIO 1
