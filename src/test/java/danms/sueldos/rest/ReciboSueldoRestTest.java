@@ -60,12 +60,17 @@ class ReciboSueldoRestTest {
 
 	@Autowired
 	DetalleReciboRepository detalleReciboRepo;
+	
+	@Autowired
+	DetalleReciboRepository detalleRepo;
 
 	@LocalServerPort
 	String puerto;
 
 	@BeforeEach
 	void limpiarRepositorios() {
+		reciboSueldoRepo.deleteAll();
+		detalleRepo.deleteAll();
 		codigoDetalleRepo.deleteAll();
 	}
 
