@@ -1,5 +1,6 @@
 package danms.sueldos.rest;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import danms.sueldos.domain.CodigoDetalle;
+import danms.sueldos.domain.ReciboSueldo;
 import danms.sueldos.services.interfaces.ReciboSueldoService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -91,6 +94,42 @@ public class ReciboSueldoRest {
 			return ResponseEntity.badRequest().build();
 		}
 	}
+	
+	/*------------Recibo sueldo-------------------*/
+	//TODO: quizas sea necesario un get recibo de sueldo por id de empleado!
+	
+	@GetMapping(path = "/{id}")
+	@ApiOperation(value = "Permite obtener un recibo de sueldo dada su id.")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "El recibo de sueldo se encontro"),
+			@ApiResponse(code = 405, message = "El id recibida es nula") })
+	public ResponseEntity<ReciboSueldo> getReciboSueldo(@PathVariable Integer id) {
+		return ResponseEntity.of(reciboSueldoService.getReciboSueldo(id));
+	}
+	
+	@GetMapping
+	@ApiOperation(value = "Permite obtener todos los recibo de sueldo")
+	public ResponseEntity<List<ReciboSueldo>> getAllReciboDeSueldo() {
+		return ResponseEntity.ok(reciboSueldoService.getAllReciboSueldo());
+	}
+	
+	@PutMapping(path = "/{id}")
+	@ApiOperation(value = "Permite actualizar un recibo de sueldo. El id del recibo debe estar en el path")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Actualizado correctamente"),
+			@ApiResponse(code = 400, message = "No se pudo actualizar") })
+	public ResponseEntity<ReciboSueldo> actualizarReciboSueldo(@RequestBody ReciboSueldo reciboSueldo, @PathVariable Integer id) {
+		// Chequeamos que la sucursal exista
+		Optional<ReciboSueldo> optReciboSueldoAActualizar = this.reciboSueldoService.getReciboSueldo(id);
+		if (optReciboSueldoAActualizar.isPresent()) {
+			//El recibo sueldo existe
+			reciboSueldo.setId(id);
+			return ResponseEntity.of(reciboSueldoService.actualizarReciboSueldo(reciboSueldo));
+		} 
+		else {
+			//El recibo sueldo no existe
+			return ResponseEntity.badRequest().build();
+		}
+	}
+	
 	
 	
 	
