@@ -2,6 +2,7 @@ package danms.sueldos.rest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.sql.Date;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,15 +22,24 @@ import org.springframework.test.context.ActiveProfiles;
 
 import danms.sueldos.domain.CodigoDetalle;
 import danms.sueldos.domain.DatoBancario;
+import danms.sueldos.domain.DetalleRecibo;
 import danms.sueldos.domain.Empleado;
+import danms.sueldos.domain.ReciboSueldo;
+import danms.sueldos.domain.Sucursal;
 import danms.sueldos.services.dao.CodigoDetalleRepository;
 import danms.sueldos.services.dao.DatoBancarioRepository;
+import danms.sueldos.services.dao.DetalleReciboRepository;
+import danms.sueldos.services.dao.EmpleadoRepository;
+import danms.sueldos.services.dao.ReciboSueldoRepository;
+import danms.sueldos.services.dao.SucursalRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("testing")
 class ReciboSueldoRestTest {
 
 	private String ENDPOINT_CODIGO_DETALLE = "/api/sueldos/recibosueldo/codigodetalle";
+
+	private String ENDPOINT_RECIBO_SUELDO = "/api/sueldos/recibosueldo";
 
 	private static final Logger logger = LoggerFactory.getLogger(SucursalRestTest.class);
 
@@ -38,6 +48,18 @@ class ReciboSueldoRestTest {
 
 	@Autowired
 	CodigoDetalleRepository codigoDetalleRepo;
+
+	@Autowired
+	ReciboSueldoRepository reciboSueldoRepo;
+
+	@Autowired
+	EmpleadoRepository empleadoRepo;
+
+	@Autowired
+	SucursalRepository sucursalRepo;
+
+	@Autowired
+	DetalleReciboRepository detalleReciboRepo;
 
 	@LocalServerPort
 	String puerto;
@@ -210,14 +232,14 @@ class ReciboSueldoRestTest {
 		// Actualizamos valores
 		cd1 = cdGuardado1;
 		server += "/" + cd1.getId();
-		
+
 		// Cambioamos datos para actualizar luego
 		cd1.setDescripcion("Descripcion cambiada");
-		
+
 		// La actualizamos
 		HttpEntity<CodigoDetalle> requestCodigoDetalle = new HttpEntity<>(cd1);
-		ResponseEntity<CodigoDetalle> respuesta = testRestTemplate.exchange(server, HttpMethod.PUT, requestCodigoDetalle,
-				CodigoDetalle.class);
+		ResponseEntity<CodigoDetalle> respuesta = testRestTemplate.exchange(server, HttpMethod.PUT,
+				requestCodigoDetalle, CodigoDetalle.class);
 		assertTrue(respuesta.getStatusCode().equals(HttpStatus.OK));
 		// Chequeamos en el repo los cambios
 		Optional<CodigoDetalle> optCodigoDetalleActualizado = codigoDetalleRepo.findById(cd1.getId());
@@ -237,6 +259,168 @@ class ReciboSueldoRestTest {
 		assertTrue(respuesta.getStatusCode().equals(HttpStatus.BAD_REQUEST));
 		logger.info("[RestAPI]Fin test: actualizarDatoBancario_noExistente");
 
+	}
+
+	/*-------------------Recibo de sueldo--------------------------*/
+	@Test
+	void getReciboSueldo() {
+		logger.info("[RestAPI]Inicio test: getReciboSueldo");
+		String server = "http://localhost:" + puerto + ENDPOINT_RECIBO_SUELDO;
+		// Recibo sueldo 1
+		ReciboSueldo rs = new ReciboSueldo();
+		rs.setTotalBruto(1500.0);
+		rs.setTotalNeto(130.0);
+		rs.setLugarDePago("ACA SE PAGA");
+		rs.setSucursal(null);
+		rs.setPagado(true);
+		rs.setFechaEmision(Date.valueOf("2021-07-21"));
+		rs.setFechaDePago(Date.valueOf("2021-07-15"));
+		rs.setDeducciones(15000000.1);
+		rs.setNumeroRecibo(70);
+		// Lo guardamos
+		ReciboSueldo rsGuardado = reciboSueldoRepo.save(rs);
+		assertNotNull(rsGuardado);
+		// Re-configuramos la ruta del path
+		server += "/" + rsGuardado.getId();
+
+		// Obetenemos el empleado
+		ResponseEntity<ReciboSueldo> respuesta = testRestTemplate.exchange(server, HttpMethod.GET, null,
+				ReciboSueldo.class);
+		assertTrue(respuesta.getStatusCode().equals(HttpStatus.OK));
+
+		assertEquals(rsGuardado.getId(), respuesta.getBody().getId());
+		assertEquals(rsGuardado.getTotalBruto(), respuesta.getBody().getTotalBruto());
+		assertEquals(rsGuardado.getNumeroRecibo(), respuesta.getBody().getNumeroRecibo());
+		logger.info("[RestAPI]Fin test: getReciboSueldo");
+	}
+
+	@Test
+	void getAllReciboSueldo() {
+		logger.info("[RestAPI]Inicio test: getAllReciboSueldo");
+		String server = "http://localhost:" + puerto + ENDPOINT_RECIBO_SUELDO;
+		// Recibo sueldo 1
+		ReciboSueldo rs = new ReciboSueldo();
+		rs.setTotalBruto(1500.0);
+		rs.setTotalNeto(130.0);
+		rs.setLugarDePago("ACA SE PAGA");
+		rs.setSucursal(null);
+		rs.setPagado(true);
+		rs.setFechaEmision(Date.valueOf("2021-07-21"));
+		rs.setFechaDePago(Date.valueOf("2021-07-15"));
+		rs.setDeducciones(15000000.1);
+		rs.setNumeroRecibo(70);
+		// Recibo sueldo 2
+		ReciboSueldo rs2 = new ReciboSueldo();
+		rs2.setTotalBruto(1544.0);
+		rs2.setTotalNeto(89.0);
+		rs2.setLugarDePago("Lugar de cobro");
+		rs2.setSucursal(null);
+		rs2.setPagado(true);
+		rs2.setFechaEmision(Date.valueOf("2021-09-21"));
+		rs2.setFechaDePago(Date.valueOf("2021-09-15"));
+		rs2.setDeducciones(15000.1);
+		rs2.setNumeroRecibo(71);
+		// SUCURSAL
+		Sucursal sucursal = new Sucursal();
+		sucursal = sucursalRepo.save(sucursal); // Guardamos la sucursal
+		assertNotNull(sucursal);
+		rs.setSucursal(sucursal);
+		rs2.setSucursal(sucursal);
+
+		// EMPLEADO
+		Optional<Empleado> optEmpleado1 = empleadoRepo.findById(1);
+		assertTrue(optEmpleado1.isPresent());
+		rs.setEmpleado(optEmpleado1.get());
+		rs2.setEmpleado(optEmpleado1.get());
+		// CODIGO DETALLE
+		CodigoDetalle cd1 = new CodigoDetalle();
+		cd1.setCodigoDetalle(100);
+		cd1.setDescripcion("La primer descripcion");
+		cd1 = codigoDetalleRepo.saveAndFlush(cd1);
+		assertNotNull(cd1);
+		// DETALLE RECIBO
+		DetalleRecibo dr1 = new DetalleRecibo();
+		dr1 = detalleReciboRepo.save(dr1);
+		assertNotNull(dr1);
+		dr1.setCodigoDetalle(cd1);
+		rs.addDetalleRecibo(dr1);
+		rs.addDetalleRecibo(dr1);
+		// Lo guardamos
+		ReciboSueldo rsGuardado = reciboSueldoRepo.save(rs);
+		assertNotNull(rsGuardado);
+		ReciboSueldo rsGuardado2 = reciboSueldoRepo.save(rs2);
+		assertNotNull(rsGuardado2);
+
+		// Obetenemos el empleado
+		ResponseEntity<ReciboSueldo[]> respuesta = testRestTemplate.getForEntity(server, ReciboSueldo[].class);
+		assertTrue(respuesta.getStatusCode().equals(HttpStatus.OK));
+		assertTrue(respuesta.getBody().length == 2);
+		logger.info("[RestAPI]Fin test: getAllReciboSueldo");
+	}
+
+	@Test
+	void actualizarReciboSueldo() {
+		logger.info("[RestAPI]Inicio test: actualizarReciboSueldo");
+		String server = "http://localhost:" + puerto + ENDPOINT_RECIBO_SUELDO;
+		// Recibo sueldo 1
+		ReciboSueldo rs = new ReciboSueldo();
+		rs.setTotalBruto(1500.0);
+		rs.setTotalNeto(130.0);
+		rs.setLugarDePago("ACA SE PAGA");
+		rs.setSucursal(null);
+		rs.setPagado(true);
+		rs.setFechaEmision(Date.valueOf("2021-07-21"));
+		rs.setFechaDePago(Date.valueOf("2021-07-15"));
+		rs.setDeducciones(15000000.1);
+		rs.setNumeroRecibo(70);
+		// SUCURSAL
+		Sucursal sucursal = new Sucursal();
+		sucursal = sucursalRepo.save(sucursal); // Guardamos la sucursal
+		assertNotNull(sucursal);
+		rs.setSucursal(sucursal);
+
+		// EMPLEADO
+		Optional<Empleado> optEmpleado1 = empleadoRepo.findById(1);
+		assertTrue(optEmpleado1.isPresent());
+		rs.setEmpleado(optEmpleado1.get());
+
+		// CODIGO DETALLE
+		CodigoDetalle cd1 = new CodigoDetalle();
+		cd1.setCodigoDetalle(100);
+		cd1.setDescripcion("La primer descripcion");
+		cd1 = codigoDetalleRepo.saveAndFlush(cd1);
+		assertNotNull(cd1);
+		// DETALLE RECIBO
+		DetalleRecibo dr1 = new DetalleRecibo();
+		dr1 = detalleReciboRepo.save(dr1);
+		assertNotNull(dr1);
+		dr1.setCodigoDetalle(cd1);
+		rs.addDetalleRecibo(dr1);
+
+		// -------------------Guardamos el recibo------------------------------
+		// Chequeamos que se guarde
+		ReciboSueldo rsGuardado = reciboSueldoRepo.save(rs);
+		assertNotNull(rsGuardado);
+
+		// Actualizamos valores
+		rs = rsGuardado;
+		server += "/" + rs.getId();
+
+		// Cambioamos datos para actualizar luego
+		rs.setNumeroRecibo(99);
+		rs.setLugarDePago("Aca hay que tener cuidado con los chorros de la salida");
+
+		// La actualizamos
+		HttpEntity<ReciboSueldo> requestReciboSueldo = new HttpEntity<>(rs);
+		ResponseEntity<ReciboSueldo> respuesta = testRestTemplate.exchange(server, HttpMethod.PUT, requestReciboSueldo,
+				ReciboSueldo.class);
+		assertTrue(respuesta.getStatusCode().equals(HttpStatus.OK));
+
+		// Chequeamos en el repo los cambios
+		Optional<ReciboSueldo> optReciboSueldoActualizado = reciboSueldoRepo.findById(rs.getId());
+		assertEquals(rs.getNumeroRecibo(), optReciboSueldoActualizado.get().getNumeroRecibo());
+		assertEquals(rs.getLugarDePago(), optReciboSueldoActualizado.get().getLugarDePago());
+		logger.info("[RestAPI]Fin test: actualizarReciboSueldo");
 	}
 
 }
