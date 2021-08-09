@@ -25,6 +25,8 @@ import danms.sueldos.domain.Empleado;
 import danms.sueldos.domain.Sucursal;
 import danms.sueldos.services.dao.EmpleadoRepository;
 import danms.sueldos.services.dao.SucursalRepository;
+import danms.sueldos.services.interfaces.EmpleadoService;
+import danms.sueldos.services.interfaces.SucursalService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("testing")
@@ -42,6 +44,9 @@ class SucursalRestTest {
 	
 	@Autowired
 	EmpleadoRepository empleadoRepo;
+	
+	@Autowired
+	SucursalService sucursalService;
 
 	@LocalServerPort
 	String puerto;
