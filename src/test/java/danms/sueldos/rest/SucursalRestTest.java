@@ -127,7 +127,6 @@ class SucursalRestTest {
 		
 		//
 		s1.setId(respuesta1.getBody().getId());
-		
 		// Chequeamos que se haya guardado en el repository
 		Optional<Sucursal> optRepoS1 = sucursalRepo.findById(s1.getId());
 		assertTrue(optRepoS1.isPresent());
@@ -271,7 +270,7 @@ class SucursalRestTest {
 
 	}
 	
-	@Disabled
+	@Test
 	void actualizarSucursal_agregarEmpleado() {
 		logger.info("[RestAPI]Inicio test: actualizarSucursal_agregarEmpleado");
 		String server = "http://localhost:" + puerto + ENDPOINT_SUCURSAL;
@@ -299,6 +298,40 @@ class SucursalRestTest {
 		Optional<Sucursal> optSucursalActualizada = sucursalRepo.findById(s1.getId());
 		assertTrue(optSucursalActualizada.get().getEmpleados().size() > 0);
 		logger.info("[RestAPI]Fin test: actualizarSucursal_agregarEmpleado");
+
+	}
+	@Test
+	void actualizarSucursal_removeEmpleado() {
+		logger.info("[RestAPI]Inicio test: actualizarSucursal_removeEmpleado");
+		String server = "http://localhost:" + puerto + ENDPOINT_SUCURSAL;
+		// Sucursal 1
+		Sucursal s1 = new Sucursal();
+		s1.setCiudad("Lucas Gonzalez");
+		s1.setCuitEmpresa("30-289615936");
+		s1.setDireccion("Hernandez 321");
+		// La guardamos
+		Sucursal repoS1 = sucursalRepo.save(s1);
+		assertNotNull(repoS1);
+		//Actualizamos valores
+		s1 = repoS1;
+		//Chequeamos si el empleado existe en la DB
+		Optional<Empleado> optEmp = empleadoRepo.findById(1);
+		assertTrue(optEmp.isPresent());
+		s1.addEmpleado(optEmp.get());
+		Sucursal sucursalGuardada = sucursalRepo.saveAndFlush(s1);
+		assertNotNull(sucursalGuardada);
+		
+		//re configuramos el path
+		server += "/"+s1.getId()+"/empleado/"+1; //borramos el empleado asociado a la sucursal
+	
+
+		ResponseEntity<Sucursal> respuesta = testRestTemplate.exchange(server, HttpMethod.DELETE, null,
+				Sucursal.class);
+		assertTrue(respuesta.getStatusCode().equals(HttpStatus.OK));
+		//Chequeamos en el repo los cambios
+		Optional<Sucursal> optSucursalActualizada = sucursalRepo.findById(s1.getId());
+		assertTrue(optSucursalActualizada.get().getEmpleados().size() == 0);
+		logger.info("[RestAPI]Fin test: actualizarSucursal_removeEmpleado");
 
 	}
 
