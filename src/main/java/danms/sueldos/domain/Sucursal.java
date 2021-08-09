@@ -24,11 +24,11 @@ public class Sucursal {
 	private String ciudad;
 	private String cuitEmpresa;
 	
-	@ManyToMany
+	@OneToMany
 	@JoinTable(
 			name = "TABLE_UNION_SUCURSAL_EMPLEADO",
-			joinColumns = @JoinColumn(name = "ID_SUCURSAL"),
-			inverseJoinColumns = @JoinColumn(name="ID_EMPLEADO"))
+			joinColumns = @JoinColumn(name = "ID_SUCURSAL")
+			,inverseJoinColumns = @JoinColumn(name="ID_EMPLEADO"))
 	private List<Empleado> empleados;
 	
 	

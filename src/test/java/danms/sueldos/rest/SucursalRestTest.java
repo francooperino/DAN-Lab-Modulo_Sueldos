@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import danms.sueldos.domain.Empleado;
 import danms.sueldos.domain.Sucursal;
+import danms.sueldos.services.dao.EmpleadoRepository;
 import danms.sueldos.services.dao.SucursalRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -36,6 +39,9 @@ class SucursalRestTest {
 
 	@Autowired
 	SucursalRepository sucursalRepo;
+	
+	@Autowired
+	EmpleadoRepository empleadoRepo;
 
 	@LocalServerPort
 	String puerto;
@@ -46,7 +52,7 @@ class SucursalRestTest {
 	}
 
 	@Test
-	void guardarSucursales() {
+	void guardarSucursales_sinEmpleados() {
 		logger.info("[RestAPI]Inicio test: guardarSucursales");
 		String server = "http://localhost:" + puerto + ENDPOINT_SUCURSAL;
 		// Sucursal 1
@@ -93,6 +99,36 @@ class SucursalRestTest {
 		Optional<Sucursal> optRepoS3 = sucursalRepo.findById(s3.getId());
 		assertTrue(optRepoS3.isPresent());
 		logger.info("[RestAPI]Fin test: guardarSucursales");
+	}
+	@Test
+	void guardarSucursales_conEmpleados() {
+		logger.info("[RestAPI]Inicio test: guardarSucursales_conEmpleados");
+		String server = "http://localhost:" + puerto + ENDPOINT_SUCURSAL;
+		// Sucursal 1
+		Sucursal s1 = new Sucursal();
+		s1.setCiudad("Lucas Gonzalez");
+		s1.setCuitEmpresa("30-289615936");
+		s1.setDireccion("Hernandez 321");
+		//Empleado 1
+		Optional<Empleado> optEmpleado = empleadoRepo.findById(1);
+		assertTrue(optEmpleado.isPresent());
+		s1.addEmpleado(optEmpleado.get());
+		
+		// ---------------------------------------------------
+		HttpEntity<Sucursal> requestSucursal1 = new HttpEntity<>(s1);
+		// Chequeamos que el retorno sea el correcto
+		ResponseEntity<Sucursal> respuesta1 = testRestTemplate.exchange(server, HttpMethod.POST, requestSucursal1,
+				Sucursal.class);
+		
+		//
+		s1.setId(respuesta1.getBody().getId());
+		
+		// Chequeamos que se haya guardado en el repository
+		Optional<Sucursal> optRepoS1 = sucursalRepo.findById(s1.getId());
+		assertTrue(optRepoS1.isPresent());
+		assertNotNull(optRepoS1.get().getEmpleados().get(0));
+		assertEquals(1,optRepoS1.get().getEmpleados().size());
+		logger.info("[RestAPI]Fin test: guardarSucursales_conEmpleados");
 	}
 
 	@Test
@@ -227,6 +263,37 @@ class SucursalRestTest {
 				Sucursal.class);
 		assertTrue(respuesta.getStatusCode().equals(HttpStatus.BAD_REQUEST));
 		logger.info("[RestAPI]Fin test: actualizarSucursal_noExistente");
+
+	}
+	
+	@Disabled
+	void actualizarSucursal_agregarEmpleado() {
+		logger.info("[RestAPI]Inicio test: actualizarSucursal_agregarEmpleado");
+		String server = "http://localhost:" + puerto + ENDPOINT_SUCURSAL;
+		// Sucursal 1
+		Sucursal s1 = new Sucursal();
+		s1.setCiudad("Lucas Gonzalez");
+		s1.setCuitEmpresa("30-289615936");
+		s1.setDireccion("Hernandez 321");
+		// La guardamos
+		Sucursal repoS1 = sucursalRepo.save(s1);
+		assertNotNull(repoS1);
+		//Actualizamos valores
+		s1 = repoS1;
+		//Chequeamos si el empleado existe en la DB
+		Optional<Empleado> optEmp = empleadoRepo.findById(1);
+		assertTrue(optEmp.isPresent());
+		//re configuramos el path
+		server += "/"+s1.getId()+"/empleado/"+1; //asociamos la sucursal con el empleado con id=1
+	
+
+		ResponseEntity<Sucursal> respuesta = testRestTemplate.exchange(server, HttpMethod.PUT, null,
+				Sucursal.class);
+		assertTrue(respuesta.getStatusCode().equals(HttpStatus.OK));
+		//Chequeamos en el repo los cambios
+		Optional<Sucursal> optSucursalActualizada = sucursalRepo.findById(s1.getId());
+		assertTrue(optSucursalActualizada.get().getEmpleados().size() > 0);
+		logger.info("[RestAPI]Fin test: actualizarSucursal_agregarEmpleado");
 
 	}
 
