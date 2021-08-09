@@ -80,6 +80,7 @@ public class SucursalRest {
 		Optional<Sucursal> optSucursalAActualizar = this.sucursalService.getSucursal(id);
 		if (optSucursalAActualizar.isPresent()) {
 			//La sucursal existe
+			sucursal.setId(id);
 			return ResponseEntity.of(sucursalService.actualizarSucursal(sucursal));
 		} 
 		else {
@@ -87,5 +88,40 @@ public class SucursalRest {
 			return ResponseEntity.badRequest().build();
 		}
 	}
+	
+	@PutMapping(path = "{idSucursal}/empleado/{idEmpleado}")
+	@ApiOperation(value = "Permite agregar un empleado a una sucursal")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Agregado correctamente"),
+			@ApiResponse(code = 400, message = "No se pudo agregar") })
+	public ResponseEntity<Sucursal> addEmpleadoASucursal(@PathVariable Integer idSucursal,@PathVariable Integer idEmpleado) {
+		// Chequeamos que la sucursal exista
+		Optional<Sucursal> optSucursalAActualizar = this.sucursalService.getSucursal(idSucursal);
+		if (optSucursalAActualizar.isPresent()) {
+			//La sucursal existe
+			return ResponseEntity.of(sucursalService.addEmpleado(idSucursal, idEmpleado));
+		} 
+		else {
+			//La sucursal no existe
+			return ResponseEntity.badRequest().build();
+		}
+	}
+	
+	@DeleteMapping(path = "{idSucursal}/empleado/{idEmpleado}")
+	@ApiOperation(value = "Permite borrar un empleado de una sucursal")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Borrado correctamente"),
+			@ApiResponse(code = 400, message = "No se pudo borrar") })
+	public ResponseEntity<Sucursal> removeEmpleadoASucursal(@PathVariable Integer idSucursal,@PathVariable Integer idEmpleado) {
+		// Chequeamos que la sucursal exista
+		Optional<Sucursal> optSucursalAActualizar = this.sucursalService.getSucursal(idSucursal);
+		if (optSucursalAActualizar.isPresent()) {
+			//La sucursal existe
+			return ResponseEntity.of(sucursalService.removeEmpleado(idSucursal, idEmpleado));
+		} 
+		else {
+			//La sucursal no existe
+			return ResponseEntity.badRequest().build();
+		}
+	}
+	
 
 }

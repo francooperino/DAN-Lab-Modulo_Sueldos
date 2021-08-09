@@ -17,4 +17,7 @@ public interface SucursalService {
 	
 	public Optional<Sucursal> borrarSucursal(Sucursal sucursal);
 	
+	public Optional<Sucursal> addEmpleado(Integer idSucursal, Integer idEmpleado);
+	
+	public Optional<Sucursal> removeEmpleado(Integer idSucursal, Integer idEmpleado);
 }
