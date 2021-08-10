@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import danms.sueldos.domain.CodigoDetalle;
@@ -412,7 +413,9 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 			return Optional.empty();
 		}
 	}
-
+	
+	//See http://www.cronmaker.com/
+	@Scheduled(cron="0 0 0 1 1/1 *") // Execute on 1st day every month @ 00:00
 	@Override
 	public void generarRecibosSueldos() {
 		logger.info("Generacion de recibos para la sucursales");
