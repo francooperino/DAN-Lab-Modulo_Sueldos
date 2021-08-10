@@ -131,6 +131,18 @@ public class ReciboSueldoRest {
 			return ResponseEntity.badRequest().build();
 		}
 	}
+	//TODO: metodo temporal
+	@GetMapping(path = "/generarRecibo")
+	@ApiOperation(value = "Permite obtener un recibo de sueldo dada su id.")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "El recibo de sueldo se encontro"),
+			@ApiResponse(code = 405, message = "El id recibida es nula") })
+	public ResponseEntity<ReciboSueldo> getReciboSueldo() {
+		reciboSueldoService.generarRecibosSueldos();
+		return ResponseEntity.ok().build();
+	}
+	
+	
+	
 	/*------------Detalle Recibo-------------------*/
 
 	@GetMapping(path = "/detalleRecibo/{idDetalle}")

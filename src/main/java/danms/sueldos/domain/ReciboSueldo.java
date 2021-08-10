@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.springframework.lang.NonNull;
 
@@ -23,8 +25,12 @@ public class ReciboSueldo {
 	@Column(name="ID_RECIBO_SUELDO")
 	private Integer id;
 	private Integer numeroRecibo;
+	
+	@Temporal(TemporalType.DATE)
 	private Date fechaEmision;
 	private String lugarDePago;
+	
+	@Temporal(TemporalType.DATE)
 	private Date fechaDePago;
 	private Boolean pagado;
 	private Double totalBruto;
@@ -46,8 +52,12 @@ public class ReciboSueldo {
 	@JoinColumn(name = "ID_EMPLEADO")
 	private Empleado empleado;
 	
+	@ManyToOne
+	@JoinColumn(name = "ID_DATO_BANCARIO")
+	private DatoBancario datoBancario;
+	
 	public ReciboSueldo(Integer numeroRecibo, Date fechaEmision, String lugarDePago, Date fechaDePago, Boolean pagado,
-			Double totalBruto, Double totalNeto, Double deducciones,Sucursal sucursal, Empleado empleado) {
+			Double totalBruto, Double totalNeto, Double deducciones,Sucursal sucursal, Empleado empleado, DatoBancario datoBancario) {
 		super();
 		this.numeroRecibo = numeroRecibo;
 		this.fechaEmision = fechaEmision;
@@ -59,6 +69,7 @@ public class ReciboSueldo {
 		this.deducciones = deducciones;
 		this.empleado = empleado;
 		this.sucursal = sucursal;
+		this.datoBancario = datoBancario;
 		this.listaDetalleRecibo = new ArrayList<>();
 	}
 
@@ -142,6 +153,15 @@ public class ReciboSueldo {
 
 	public void setEmpleado(Empleado empleado) {
 		this.empleado = empleado;
+	}
+
+	
+	public DatoBancario getDatoBancario() {
+		return datoBancario;
+	}
+
+	public void setDatoBancario(DatoBancario datoBancario) {
+		this.datoBancario = datoBancario;
 	}
 
 	public Integer getId() {

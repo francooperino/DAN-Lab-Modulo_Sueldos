@@ -1,5 +1,9 @@
 package danms.sueldos.services;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,8 +72,7 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 						+ "e id: " + codigoDetalle.getId());
 				codigoDetalle.setId(optCodigoDetalleBuscado.get().getId());
 				return this.guardarCodigoDetalle(codigoDetalle);
-			} 
-			else {
+			} else {
 				// No existe en la DB
 				logger.error("El codigo detalle con codigo detalle: " + codigoDetalle.getCodigoDetalle()
 						+ " no existe en la DB");
@@ -408,5 +411,74 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 			logger.error("El id recibido es null");
 			return Optional.empty();
 		}
+	}
+
+	@Override
+	public void generarRecibosSueldos() {
+		logger.info("Generacion de recibos para la sucursales");
+		// Debo generar los recibos por cada empleado de cada sucursal
+		List<Sucursal> listaSucursales = sucursalService.getAllSucursal();
+		for (Sucursal unaSucursal : listaSucursales) {
+			logger.info("Generacion de recibos sueldos para la sucursal con id: " + unaSucursal.getId());
+			List<Empleado> listaEmpleados = unaSucursal.getEmpleados();
+			// Por cada empleado generamos el recibo
+			for (Empleado unEmpleado : listaEmpleados) {
+				logger.info("Generacion de recibos para empleado con id: " + unEmpleado.getId());
+				Optional<ReciboSueldo> optReciboGenerado = generarReciboSueldo(unaSucursal, unEmpleado);
+				this.guardarReciboSueldo(optReciboGenerado.get());
+			}
+		}
+	}
+
+	@Override
+	public Optional<ReciboSueldo> generarReciboSueldo(Sucursal sucursal, Empleado empleado) {
+		//--------------Datos basicos
+		Date fechaActual = Date.valueOf(LocalDate.now()); // Fecha actual
+		Date fechaDePago = Date.valueOf(LocalDate.now().plusDays(10)); // 10 dias de la fecha actual
+		
+		ReciboSueldo reciboSueldo = new ReciboSueldo();
+		reciboSueldo.setSucursal(sucursal);
+		reciboSueldo.setEmpleado(empleado);
+		reciboSueldo.setNumeroRecibo(123); //TODO: Ver
+		reciboSueldo.setFechaEmision(fechaActual);
+		reciboSueldo.setLugarDePago("Santa Fe");
+		reciboSueldo.setFechaDePago(fechaDePago);
+		reciboSueldo.setPagado(false);
+		//Dato bancario del empleado
+		List<DatoBancario> listaDatoBancario = empleadoService.getDatoBancarioPorIdEmpleado(empleado.getId());
+		reciboSueldo.setDatoBancario(listaDatoBancario.get(0));
+		//--------------Datos complementarios
+		//Variables auxiliares
+		Double totalBruto = 0.0;
+		Double totalDeducciones = 0.0;
+		
+		//Debemos crear un detalle recibo por cada codigo detalle
+		List<CodigoDetalle> listaCodigosDetalles = this.getAllCodigoDetalle();
+		DetalleRecibo detalleRecibo;
+		for(CodigoDetalle unCod: listaCodigosDetalles) {
+			detalleRecibo = new DetalleRecibo();
+			detalleRecibo.setCodigoDetalle(unCod);
+			//Chequeamos haber --> Es solo el sueldo (simplificacion de la solucion)
+			if(unCod.getHaber() != null) {
+				detalleRecibo.setHaber(unCod.getHaber());
+				totalBruto = unCod.getHaber(); 
+				detalleRecibo.setDeduccion(0.0);
+				detalleRecibo.setPorcentaje(0.0);
+			}
+			else {
+				//Si no hay haber, hay deducciones
+				detalleRecibo.setDeduccion(totalBruto * (unCod.getPorcentaje()/100));
+				detalleRecibo.setPorcentaje(unCod.getPorcentaje());
+				totalDeducciones += totalBruto * (unCod.getPorcentaje()/100);
+				detalleRecibo.setHaber(0.0);
+			}
+			//Agrego el detalle al recibo
+			reciboSueldo.addDetalleRecibo(detalleRecibo);
+		}
+		//Valores faltantes
+		reciboSueldo.setTotalBruto(totalBruto);
+		reciboSueldo.setTotalNeto(totalBruto-totalDeducciones); //Total neto
+		reciboSueldo.setDeducciones(totalDeducciones);
+		return Optional.of(reciboSueldo);
 	}
 }

@@ -16,6 +16,8 @@ public class CodigoDetalle {
 	@Column(unique = true)
 	private Integer codigoDetalle;
 	private String descripcion;
+	private Double porcentaje;
+	private Double haber;
 	
 	
 	
@@ -24,10 +26,12 @@ public class CodigoDetalle {
 	}
 	
 	
-	public CodigoDetalle(Integer codigoDetalle, String descripcion) {
+	public CodigoDetalle(Integer codigoDetalle, String descripcion, Double porcentaje, Double haber, Double deduccion) {
 		super();
 		this.codigoDetalle = codigoDetalle;
 		this.descripcion = descripcion;
+		this.porcentaje = porcentaje;
+		this.haber = haber;
 	}
 	
 	public Integer getId() {
@@ -51,6 +55,25 @@ public class CodigoDetalle {
 	}
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+
+	public Double getPorcentaje() {
+		return porcentaje;
+	}
+
+
+	public void setPorcentaje(Double porcentaje) {
+		this.porcentaje = porcentaje;
+	}
+
+
+	public Double getHaber() {
+		return haber;
+	}
+
+
+	public void setHaber(Double haber) {
+		this.haber = haber;
 	}
 
 

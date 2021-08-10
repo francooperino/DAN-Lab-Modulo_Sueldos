@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import danms.sueldos.domain.CodigoDetalle;
 import danms.sueldos.domain.DetalleRecibo;
+import danms.sueldos.domain.Empleado;
 import danms.sueldos.domain.ReciboSueldo;
+import danms.sueldos.domain.Sucursal;
 
 public interface ReciboSueldoService {
 
@@ -36,6 +38,10 @@ public interface ReciboSueldoService {
 	public Optional<DetalleRecibo> borrarDetalleRecibo(DetalleRecibo detalleRecibo);
 
 	// ABM ReciboSueldo
+	
+	public void generarRecibosSueldos();
+	
+	public Optional<ReciboSueldo> generarReciboSueldo(Sucursal sucursal, Empleado empleado);
 	
 	public Optional<ReciboSueldo> guardarReciboSueldo(ReciboSueldo reciboSueldo);
 
