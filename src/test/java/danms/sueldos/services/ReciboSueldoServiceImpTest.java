@@ -534,7 +534,7 @@ class ReciboSueldoServiceImpTest {
 	@Nested
 	@DisplayName("Tests recibo")
 	class reciboTest {
-		
+
 		@Test
 		// Test para Recibo de sueldo
 		void guardarReciboSueldo() {
@@ -1063,15 +1063,13 @@ class ReciboSueldoServiceImpTest {
 
 			// Borramos el codigo detalle
 			Optional<ReciboSueldo> opRs1 = reciboSueldoService.borrarReciboSueldo(rs);
-			
+
 			assertTrue(opRs1.isPresent());
-			
+
 			assertTrue(reciboRepo.findById(opRs1.get().getId()).isEmpty());
-			
-			
 
 		}
-		
+
 		@Test
 		// Test para Recibo
 		void borrarReciboNoExistente() {
@@ -1081,13 +1079,62 @@ class ReciboSueldoServiceImpTest {
 
 			// Borramos el codigo detalle
 			Optional<ReciboSueldo> opRs1 = reciboSueldoService.borrarReciboSueldo(rs);
-			
+
 			assertTrue(opRs1.isEmpty());
-			
-			
-			
+		}
+
+		@Test
+		void generarRecibosSueldo() {
+			Sucursal s1 = new Sucursal();
+			// Busco empleados
+			Optional<Empleado> optEmp1 = empleadoRepo.findById(1);
+			Optional<Empleado> optEmp2 = empleadoRepo.findById(2);
+			Optional<Empleado> optEmp3 = empleadoRepo.findById(3);
+			assertTrue(optEmp1.isPresent());
+			assertTrue(optEmp2.isPresent());
+			assertTrue(optEmp3.isPresent());
+			// Agregamos los empleados
+			s1.addEmpleado(optEmp1.get());
+			s1.addEmpleado(optEmp2.get());
+			s1.addEmpleado(optEmp3.get());
+			s1 = sucursalRepo.save(s1);
+			assertNotNull(s1);
+			// Creamos codigos detalles
+			CodigoDetalle cod1 = new CodigoDetalle();
+			CodigoDetalle cod2 = new CodigoDetalle();
+			CodigoDetalle cod3 = new CodigoDetalle();
+			cod1.setHaber(500000.00);
+			cod2.setPorcentaje(2.50);
+			cod3.setPorcentaje(7.50);
+			codigoDetalleRepo.save(cod1);
+			codigoDetalleRepo.save(cod2);
+			codigoDetalleRepo.save(cod3);
+			assertNotNull(cod1);
+			assertNotNull(cod2);
+			assertNotNull(cod3);
+			// Creamos datos bancarios
+			DatoBancario datoBancario1 = new DatoBancario();
+			DatoBancario datoBancario2 = new DatoBancario();
+			DatoBancario datoBancario3 = new DatoBancario();
+			datoBancario1.setEmpleado(optEmp1.get());
+			datoBancario2.setEmpleado(optEmp2.get());
+			datoBancario3.setEmpleado(optEmp3.get());
+			datoBancario1 = datoBancarioRepo.save(datoBancario1);
+			assertNotNull(datoBancario1);
+			datoBancario2 = datoBancarioRepo.save(datoBancario2);
+			assertNotNull(datoBancario2);
+			datoBancario3 = datoBancarioRepo.save(datoBancario3);
+			assertNotNull(datoBancario3);
+			//
+			reciboSueldoService.generarRecibosSueldos();
+			// Buscamos el recibo en la DB
+			List<ReciboSueldo> listaRecibo = reciboRepo.findAll();
+			assertEquals(3, listaRecibo.size());
+			assertEquals(50000.00, listaRecibo.get(0).getDeducciones());
+			assertEquals(450000.00, listaRecibo.get(0).getTotalNeto());
 
 		}
+
 	}
 
 }
