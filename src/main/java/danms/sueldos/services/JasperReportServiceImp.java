@@ -5,11 +5,17 @@ import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.exolab.castor.types.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +23,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
+import danms.sueldos.domain.ReciboSueldo;
 import danms.sueldos.services.interfaces.JasperReportService;
+import danms.sueldos.services.interfaces.ReciboSueldoService;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -30,6 +38,9 @@ public class JasperReportServiceImp implements JasperReportService {
 
 	@Autowired
 	DataSource dataSource;
+	
+	@Autowired
+	ReciboSueldoService reciboSueldoService;
 
 	@Value("${jasperDestinoReportes}") //La obtenemos del app-properties
 	private String destFileName;
@@ -55,7 +66,7 @@ public class JasperReportServiceImp implements JasperReportService {
 			connection = dataSource.getConnection();
 			JasperPrint jasperPrint;
 			jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
-			JasperExportManager.exportReportToPdfFile(jasperPrint, destFileName);
+			JasperExportManager.exportReportToPdfFile(jasperPrint, generarPathDestinoFile(id_recibo));
 			return true;
 		} catch (SQLException e) {
 			logger.error("Ocurrio un error al obtener la conexion a la DB");
@@ -86,5 +97,19 @@ public class JasperReportServiceImp implements JasperReportService {
 		File template = ResourceUtils.getFile(pathPlantillaJasper);
 		return JasperCompileManager.compileReport(template.getAbsolutePath());
 
+	}
+	
+	@Override
+	public String generarPathDestinoFile(Integer idRecibo) {
+		String pathFinal = destFileName;
+		ReciboSueldo recibo = reciboSueldoService.getReciboSueldo(idRecibo).get();
+		//Formateamos el mes de la fecha de emision:
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM");
+	    Integer month = Integer.parseInt(dateFormat.format(recibo.getFechaEmision()));
+		//Contruimos el nombre del archivo final
+		pathFinal += "/recibo_idEmp"+recibo.getEmpleado().getId()
+				+"_fechaEmision_"+month+".pdf";
+		//
+		return pathFinal;
 	}
 }
