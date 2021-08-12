@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -30,8 +31,10 @@ public class JasperReportServiceImp implements JasperReportService {
 	@Autowired
 	DataSource dataSource;
 
-	private String destFileName = "C:/Users/nacho/Desktop/report.pdf";
-	private String pathPlantillaJasper = "classpath:reporte-recibo-sueldo.jrxml";
+	@Value("${jasperDestinoReportes}") //La obtenemos del app-properties
+	private String destFileName;
+	@Value("${jasperSourceTemplateReportReciboSueldo}") //La obtenemos del app-properties
+	private String pathPlantillaJasper;
 
 	private static final Logger logger = LoggerFactory.getLogger(JasperReportServiceImp.class);
 
