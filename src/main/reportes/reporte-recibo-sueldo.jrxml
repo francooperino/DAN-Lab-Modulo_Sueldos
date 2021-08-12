@@ -7,7 +7,17 @@
 	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="353"/>
 	<parameter name="nro_recibo" class="java.lang.Integer"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT * FROM recibo_sueldo rs JOIN detalle_recibo dr ON rs.id_recibo_sueldo=dr.id_recibo_sueldo JOIN codigo_detalle cd ON cd.id_codigo_detalle=dr.id_codigo_detalle JOIN SUCURSAL s ON s.id_sucursal=rs.id_sucursal JOIN dato_bancario db ON db.id_dato_bancario=rs.id_dato_bancario JOIN table_union_sucursal_empleado tu ON s.id_sucursal=tu.id_sucursal JOIN empleado e ON tu.id_empleado=e.id_empleado WHERE rs.id_recibo_sueldo=$P{nro_recibo}]]>
+		<![CDATA[SELECT * FROM recibo_sueldo rs JOIN detalle_recibo dr 
+ON rs.id_recibo_sueldo=dr.id_recibo_sueldo
+JOIN codigo_detalle cd 
+ON cd.id_codigo_detalle=dr.id_codigo_detalle
+JOIN SUCURSAL s 
+ON s.id_sucursal=rs.id_sucursal
+JOIN dato_bancario db 
+ON db.id_dato_bancario=rs.id_dato_bancario
+JOIN empleado e 
+ON rs.id_empleado=e.id_empleado
+WHERE rs.id_recibo_sueldo=$P{nro_recibo}]]>
 	</queryString>
 	<field name="id_recibo_sueldo" class="java.lang.Integer">
 		<property name="com.jaspersoft.studio.field.name" value="id_recibo_sueldo"/>
@@ -189,16 +199,6 @@
 		<property name="com.jaspersoft.studio.field.tree.path" value="dato_bancario"/>
 	</field>
 	<field name="COLUMN_32" class="java.lang.Integer">
-		<property name="com.jaspersoft.studio.field.name" value="id_sucursal"/>
-		<property name="com.jaspersoft.studio.field.label" value="id_sucursal"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="table_union_sucursal_empleado"/>
-	</field>
-	<field name="COLUMN_33" class="java.lang.Integer">
-		<property name="com.jaspersoft.studio.field.name" value="id_empleado"/>
-		<property name="com.jaspersoft.studio.field.label" value="id_empleado"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="table_union_sucursal_empleado"/>
-	</field>
-	<field name="COLUMN_34" class="java.lang.Integer">
 		<property name="com.jaspersoft.studio.field.name" value="id_empleado"/>
 		<property name="com.jaspersoft.studio.field.label" value="id_empleado"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="empleado"/>
@@ -411,6 +411,10 @@
 			</textField>
 			<textField>
 				<reportElement x="80" y="0" width="200" height="30" uuid="7327aa4d-ae88-43d7-b4fd-ca307c22d537"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0" lineColor="#2B2B2B"/>
+				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
 			</textField>
@@ -480,7 +484,7 @@
 				<textFieldExpression><![CDATA[$F{fecha_emision}.toLocalDate()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="380" y="20" width="100" height="30" uuid="b5fdc22c-1585-4c74-a6b7-290f22c7adc4"/>
+				<reportElement x="380" y="20" width="100" height="31" uuid="b5fdc22c-1585-4c74-a6b7-290f22c7adc4"/>
 				<box>
 					<bottomPen lineWidth="1.0"/>
 					<rightPen lineWidth="1.0"/>
@@ -489,7 +493,7 @@
 				<textFieldExpression><![CDATA[$F{total_bruto}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="480" y="20" width="95" height="30" uuid="287b190e-d783-4ae8-ac52-37770a11bda9"/>
+				<reportElement x="480" y="20" width="95" height="31" uuid="287b190e-d783-4ae8-ac52-37770a11bda9"/>
 				<box>
 					<bottomPen lineWidth="1.0"/>
 				</box>
