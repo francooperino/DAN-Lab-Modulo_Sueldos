@@ -19,14 +19,14 @@ public class Empleado {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //valor autonumerico
 	@Column(name="ID_EMPLEADO")
 	private Integer id;
-	private String email;
+	private String mail;
 	
 	public Empleado() {
 		super();
 	}
 	public Empleado(String email,DatoBancario datoBancario) {
 		super();
-		this.email = email;
+		this.mail = email;
 	}
 	
 	
@@ -37,9 +37,9 @@ public class Empleado {
 		return id;
 	}
 	public String getEmail() {
-		return email;
+		return mail;
 	}
 	public void setEmail(String email) {
-		this.email = email;
+		this.mail = email;
 	}
 }
