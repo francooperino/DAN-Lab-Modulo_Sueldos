@@ -26,6 +26,7 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 @Service
 public class JasperReportServiceImp implements JasperReportService {
@@ -88,9 +89,13 @@ public class JasperReportServiceImp implements JasperReportService {
 	}
 
 	private JasperReport getJasperReport() throws FileNotFoundException, JRException {
+		/*Codigo para generar el jasper report desde un .jrxml*/
+		//File template = ResourceUtils.getFile(pathPlantillaJasper);
+		//return JasperCompileManager.compileReport(template.getAbsolutePath());
+		/*Codigo para generar el jasper report desde un .jasper (Quiero creer que es mas rapido porque ya esta compilado)*/
 		File template = ResourceUtils.getFile(pathPlantillaJasper);
-		return JasperCompileManager.compileReport(template.getAbsolutePath());
-
+		JasperReport rpt = (JasperReport)JRLoader.loadObject(template);
+		return rpt;
 	}
 	
 	@Override
