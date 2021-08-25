@@ -3,19 +3,13 @@ package danms.sueldos.services;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.types.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +26,7 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 @Service
 public class JasperReportServiceImp implements JasperReportService {
@@ -94,9 +89,13 @@ public class JasperReportServiceImp implements JasperReportService {
 	}
 
 	private JasperReport getJasperReport() throws FileNotFoundException, JRException {
+		/*Codigo para generar el jasper report desde un .jrxml*/
+		//File template = ResourceUtils.getFile(pathPlantillaJasper);
+		//return JasperCompileManager.compileReport(template.getAbsolutePath());
+		/*Codigo para generar el jasper report desde un .jasper (Quiero creer que es mas rapido porque ya esta compilado)*/
 		File template = ResourceUtils.getFile(pathPlantillaJasper);
-		return JasperCompileManager.compileReport(template.getAbsolutePath());
-
+		JasperReport rpt = (JasperReport)JRLoader.loadObject(template);
+		return rpt;
 	}
 	
 	@Override
