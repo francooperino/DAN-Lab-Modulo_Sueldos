@@ -186,6 +186,18 @@ public class EmpleadoServiceImp implements EmpleadoService {
 		}
 	}
 
+	@Override
+	public List<Empleado> getAllEmpleadoNoAsociadoASucursal() {
+		logger.info("Solicitud de obtenciion de todos los empleados no acosiados a una sucursal");
+		try {
+			List<Empleado> listEmpleado=empleadoRepo.getAllEmpleadosNoAsociadoASucursal();	
+			return listEmpleado;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}	
+	}
+
 	
 
 }

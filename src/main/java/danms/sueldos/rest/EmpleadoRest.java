@@ -40,6 +40,16 @@ public class EmpleadoRest {
 		return ResponseEntity.of(empleadoService.getEmpleado(id));
 	}
 
+	@GetMapping(path="/empleadosNoAsociadosSucursal")
+	@ApiOperation(value = "Permite obtener todos los empleados que no estan asociados a nunguna sucursal.")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = ""),
+			@ApiResponse(code = 405, message = "") })
+	public ResponseEntity<List<Empleado>> getEmpleadoNoAsociadoASucursal() {
+		return ResponseEntity.ok(empleadoService.getAllEmpleadoNoAsociadoASucursal());
+	}
+	
+	
 	@GetMapping
 	@ApiOperation(value = "Permite obtener todos los empleados registrados")
 	public ResponseEntity<List<Empleado>> getProducto() {
