@@ -10,6 +10,8 @@ public interface EmpleadoService {
 	
 	public Optional<Empleado> getEmpleado(Integer idEmpleado);
 	
+	public List<Empleado> getAllEmpleadoNoAsociadoASucursal();
+	
 	public List<Empleado> getAllEmpleado();
 	
 	//--------Dato bancario
