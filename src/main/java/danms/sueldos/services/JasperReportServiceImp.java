@@ -21,7 +21,6 @@ import danms.sueldos.domain.ReciboSueldo;
 import danms.sueldos.services.interfaces.JasperReportService;
 import danms.sueldos.services.interfaces.ReciboSueldoService;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;

@@ -23,7 +23,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import danms.sueldos.domain.DatoBancario;
 import danms.sueldos.domain.Empleado;
-import danms.sueldos.domain.Sucursal;
 import danms.sueldos.services.dao.DatoBancarioRepository;
 import danms.sueldos.services.dao.EmpleadoRepository;
 

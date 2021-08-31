@@ -2,11 +2,9 @@ package danms.sueldos.rest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,6 @@ import danms.sueldos.domain.Empleado;
 import danms.sueldos.domain.Sucursal;
 import danms.sueldos.services.dao.EmpleadoRepository;
 import danms.sueldos.services.dao.SucursalRepository;
-import danms.sueldos.services.interfaces.EmpleadoService;
 import danms.sueldos.services.interfaces.SucursalService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

@@ -27,7 +27,6 @@ import danms.sueldos.domain.Empleado;
 import danms.sueldos.domain.ReciboSueldo;
 import danms.sueldos.domain.Sucursal;
 import danms.sueldos.services.dao.CodigoDetalleRepository;
-import danms.sueldos.services.dao.DatoBancarioRepository;
 import danms.sueldos.services.dao.DetalleReciboRepository;
 import danms.sueldos.services.dao.EmpleadoRepository;
 import danms.sueldos.services.dao.ReciboSueldoRepository;
