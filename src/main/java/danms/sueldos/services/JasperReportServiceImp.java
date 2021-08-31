@@ -36,6 +36,9 @@ public class JasperReportServiceImp implements JasperReportService {
 	
 	@Autowired
 	ReciboSueldoService reciboSueldoService;
+	
+	@Value("${jasperImagesSources}")
+	private String rutaImagenesReporte;
 
 	@Value("${jasperDestinoReportes}") //La obtenemos del app-properties
 	private String destFileName;
@@ -47,9 +50,9 @@ public class JasperReportServiceImp implements JasperReportService {
 	private Connection connection;
 
 	@Override
-	public Boolean generarReciboSueldo(Integer id_recibo) {
+	public String generarReciboSueldo(Integer id_recibo) {
 		logger.info("Generacion del reporte del recibo de sueldo con id: " + id_recibo);
-
+		String path = null;
 		try {
 			// 1. compile template ".jrxml" file
 			JasperReport jasperReport;
@@ -57,26 +60,29 @@ public class JasperReportServiceImp implements JasperReportService {
 			// 2. parameters "empty"
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("nro_recibo", id_recibo);
+			parameters.put("RutasImagenes",rutaImagenesReporte);
 			// 3. datasource "java object"
 			connection = dataSource.getConnection();
 			JasperPrint jasperPrint;
 			jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
-			JasperExportManager.exportReportToPdfFile(jasperPrint, generarPathDestinoFile(id_recibo));
-			return true;
+			
+			path= generarPathDestinoFile(id_recibo);
+			JasperExportManager.exportReportToPdfFile(jasperPrint,path);
+			return path;
 		} catch (SQLException e) {
 			logger.error("Ocurrio un error al obtener la conexion a la DB");
 			logger.error("No se puedo generar el reporte");
 			e.printStackTrace();
-			return false;
+			return path;
 		} catch (FileNotFoundException e) {
 			logger.error("No se pudo abrir el archivo en la path: " + pathPlantillaJasper);
 			logger.error("No se puedo generar el reporte");
 			e.printStackTrace();
-			return false;
+			return path;
 		} catch (JRException e) {
 			logger.error("No se puedo generar el reporte");
 			e.printStackTrace();
-			return false;
+			return path;
 		} finally {
 			try {
 				connection.close();

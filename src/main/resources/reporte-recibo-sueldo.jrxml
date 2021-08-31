@@ -2,10 +2,11 @@
 <!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ca4b440f-b4c7-44ce-b197-671fe8d25f80">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="647"/>
 	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="353"/>
 	<parameter name="nro_recibo" class="java.lang.Integer"/>
+	<parameter name="RutasImagenes" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT * FROM recibo_sueldo rs JOIN detalle_recibo dr 
 ON rs.id_recibo_sueldo=dr.id_recibo_sueldo
@@ -267,7 +268,7 @@ WHERE rs.id_recibo_sueldo=$P{nro_recibo}]]>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="102" splitType="Stretch">
+		<band height="110" splitType="Stretch">
 			<staticText>
 				<reportElement x="290" y="0" width="260" height="19" uuid="517a4584-1ca4-4245-b960-47465a6fdcbd"/>
 				<textElement>
@@ -296,10 +297,6 @@ WHERE rs.id_recibo_sueldo=$P{nro_recibo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cuit_empresa}]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="20" y="40" width="70" height="60" uuid="eda08b13-26ea-451d-ae28-4b94afb9f052"/>
-				<imageExpression><![CDATA["ladrillo.png"]]></imageExpression>
-			</image>
 			<staticText>
 				<reportElement x="390" y="25" width="110" height="30" uuid="6ea73956-9cea-43b6-b097-3caf292f4303"/>
 				<textElement textAlignment="Right">
@@ -314,6 +311,10 @@ WHERE rs.id_recibo_sueldo=$P{nro_recibo}]]>
 				</textElement>
 				<text><![CDATA[Número de recibo:]]></text>
 			</staticText>
+			<image>
+				<reportElement x="0" y="40" width="70" height="57" uuid="f531f277-b096-4cb3-8fa1-5d66af879825"/>
+				<imageExpression><![CDATA[$P{RutasImagenes}+"/ladrillo.png"]]></imageExpression>
+			</image>
 			<textField>
 				<reportElement x="61" y="0" width="140" height="18" uuid="829efa07-8655-4001-b8f9-1a7b83e50bf5"/>
 				<textElement verticalAlignment="Middle">
@@ -614,7 +615,7 @@ WHERE rs.id_recibo_sueldo=$P{nro_recibo}]]>
 			</staticText>
 			<image>
 				<reportElement x="407" y="140" width="167" height="39" uuid="eee36a91-2fc8-44c4-8214-a9d91826f2a4"/>
-				<imageExpression><![CDATA["Firma empleador.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{RutasImagenes}+"/FirmaEmpleador.png"]]></imageExpression>
 			</image>
 		</band>
 	</columnFooter>
