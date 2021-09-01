@@ -105,6 +105,26 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 			return Optional.empty();
 		}
 	}
+	
+	@Override
+	public Optional<CodigoDetalle> getCodigoDetallePorID(Integer idCodigoDetalle) {
+		logger.info("Solicitud de obtencion por id del codigoDetalle: " + idCodigoDetalle);
+		try {
+			Optional<CodigoDetalle> optCodigoDetalle = codigoDetalleRepository.findById(idCodigoDetalle);
+			// Chequemos si lo encontro
+			if (optCodigoDetalle.isEmpty()) {
+				logger.debug("No se encontro el codigo detalle con el id: " + idCodigoDetalle);
+				return optCodigoDetalle;
+			}
+			logger.debug("Se encontro el codigo detalle con el id: " + idCodigoDetalle);
+			return optCodigoDetalle;
+
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			logger.error("El codigo recibido es null");
+			return Optional.empty();
+		}
+	}
 
 	@Override
 	public List<CodigoDetalle> getAllCodigoDetalle() {
@@ -482,4 +502,5 @@ public class ReciboSueldoServiceImp implements ReciboSueldoService {
 		reciboSueldo.setDeducciones(totalDeducciones);
 		return Optional.of(reciboSueldo);
 	}
+
 }

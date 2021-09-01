@@ -17,7 +17,9 @@ public interface ReciboSueldoService {
 
 	public Optional<CodigoDetalle> actualizarCodigoDetalle(CodigoDetalle codigoDetalle);
 
-	public Optional<CodigoDetalle> getCodigoDetalle(Integer idCodigoDetalle);
+	public Optional<CodigoDetalle> getCodigoDetalle(Integer CodigoDetalle);
+	
+	public Optional<CodigoDetalle> getCodigoDetallePorID(Integer idCodigoDetalle);
 
 	public List<CodigoDetalle> getAllCodigoDetalle();
 

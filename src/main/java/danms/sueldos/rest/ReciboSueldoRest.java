@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/api/sueldos/recibosueldo")
-@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE,RequestMethod.PUT})
 public class ReciboSueldoRest {
 
 	@Autowired
@@ -85,15 +85,15 @@ public class ReciboSueldoRest {
 			@ApiResponse(code = 400, message = "No se pudo actualizar") })
 	public ResponseEntity<CodigoDetalle> actualizarCodigoDetalle(@RequestBody CodigoDetalle codigoDetalle,
 			@PathVariable Integer id) {
-		// Chequeamos que la sucursal exista
+		// Chequeamos que el codigo detalle exista
 		Optional<CodigoDetalle> optCodigoDetalleAActualizar = this.reciboSueldoService
-				.getCodigoDetalle(codigoDetalle.getCodigoDetalle());
+				.getCodigoDetallePorID(id);
 		if (optCodigoDetalleAActualizar.isPresent()) {
-			// La sucursal existe
+			// El codigo detalle existe
 			codigoDetalle.setId(id);
 			return ResponseEntity.of(reciboSueldoService.actualizarCodigoDetalle(codigoDetalle));
 		} else {
-			// La sucursal no existe
+			// El codigo detalle no existe
 			return ResponseEntity.badRequest().build();
 		}
 	}
