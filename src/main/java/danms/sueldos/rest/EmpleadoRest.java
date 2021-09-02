@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/api/sueldos/empleado")
+@CrossOrigin("*")
 public class EmpleadoRest {
 
 	@Autowired
@@ -83,6 +85,15 @@ public class EmpleadoRest {
 			return ResponseEntity.badRequest().build();
 		}
 		return ResponseEntity.of(empleadoService.getDatoBancario(idDatoBancario));
+	}
+	
+	@GetMapping(path="/empleadosNoAsociadosSucursal")
+	@ApiOperation(value = "Permite obtener todos los empleados que no estan asociados a nunguna sucursal.")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = ""),
+			@ApiResponse(code = 405, message = "") })
+	public ResponseEntity<List<Empleado>> getEmpleadoNoAsociadoASucursal() {
+		return ResponseEntity.ok(empleadoService.getAllEmpleadoNoAsociadoASucursal());
 	}
 	
 	@DeleteMapping(path = "/datobancario/{id}")

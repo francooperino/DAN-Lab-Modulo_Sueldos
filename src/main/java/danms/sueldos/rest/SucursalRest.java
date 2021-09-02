@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/api/sueldos/sucursal")
-@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
+@CrossOrigin("*")
 public class SucursalRest {
 
 	@Autowired
